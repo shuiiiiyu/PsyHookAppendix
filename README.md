@@ -369,29 +369,29 @@ To further investigate model behavior under different levels of psychological-ho
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
-| Yi-Vision-V2 | 0.5296 | 0.7255 | **0.5568** | **0.6782** |
-| Claude | 0.4014 | 0.8170 | 0.4706 | 0.6144 |
-| Gemini | 0.3759 | 0.7987 | 0.4392 | 0.5359 |
+| Yi-Vision-V2 | **0.5296** | 0.7255 | **0.5568** | **0.6782** |
+| Claude-3.7Sonnet | 0.4014 | **0.8170** | 0.4706 | 0.6144 |
+| Gemini 2.0Flash | 0.3759 | 0.7987 | 0.4392 | 0.5359 |
 | Qwen2.5-VL-32B | 0.3068 | 0.6679 | 0.3831 | 0.5267 |
 | Gemma4-4B | 0.4394 | 0.3810 | 0.2725 | 0.3671 |
 | Qwen2.5-VL-7B | 0.4207 | 0.3779 | 0.2641 | 0.3640 |
 | GLM-4.1V | 0.3729 | 0.3112 | 0.2262 | 0.2332 |
 | DeepSeek-FewShot | 0.3051 | 0.4337 | 0.1979 | 0.2765 |
-| Qwen3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
+| Qwen2.5VL-3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
 
 ### Table 21. Performance on Composite-Hook Samples (N = 822)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
-| Claude | 0.6768 | 0.6990 | **0.6561** | **0.7216** |
-| Yi-Vision-V2 | 0.7545 | 0.5714 | 0.6229 | 0.6839 |
-| Gemini | 0.6084 | 0.7220 | 0.5735 | 0.6415 |
+| Claude-3.7Sonnet | 0.6768 | 0.6990 | **0.6561** | 0.7216 |
+| Yi-Vision-V2 | **0.7545** | 0.5714 | 0.6229 | 0.6839 |
+| Gemini 2.0Flash | 0.6084 | **0.7220** | 0.5735 | 0.6415 |
 | Qwen2.5-VL-32B | 0.5444 | 0.5884 | 0.5379 | 0.6347 |
 | GLM-4.1V | 0.5460 | 0.3632 | 0.3266 | 0.3490 |
 | Qwen2.5-VL-7B | 0.5849 | 0.2674 | 0.2881 | 0.3323 |
 | Gemma4-4B | 0.5858 | 0.2610 | 0.2775 | 0.3310 |
 | DeepSeek-FewShot | 0.4337 | 0.3859 | 0.2652 | 0.3244 |
-| Qwen3B | 0.5922 | 0.1336 | 0.0888 | 0.0976 |
+| Qwen2.5VL-3B | 0.5922 | 0.1336 | 0.0888 | 0.0976 |
 
 ### Discussion
 
@@ -440,9 +440,9 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 ### Table 24: Prompt Robustness (Zero-shot)
 | ModelName | prompt | Macro-Recall | Macro-Precision| Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- | --- |
-| Qwen2.5-VL-32B-Instruct | missing optional definition | 0.6893 | 0.3870 | 0.4460 | 0.2167 | 0.1430 |
+| Qwen2.5-VL-32B-Instruct | missing optional definition | **0.6893** | 0.3870 | 0.4460 | 0.2167 | 0.1430 |
 | Qwen2.5-VL-32B-Instruct | missing CoT guide | 0.5980 | **0.4885** | **0.4881** | **0.1464** | **0.3042**|
-| Qwen2.5-VL-32B-Instruct | full prompt  | **0.7144** | 0.2963 | 0.3954 |  0.2328 | 0.191 |
+| Qwen2.5-VL-32B-Instruct | full prompt  | 0.5847 | 0.4668 | 0.4638 |  0.1563 | 0.3009 |
 
 
 ## 3.9 Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
@@ -451,17 +451,17 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Claude-haiku4.5 | Few-shot | Multimodal | 0.3458 | **0.7829** | 0.4590 | 0.1785 | 0.2303 |
 | Claude-haiku4.5 | Zero-shot | Multimodal | 0.4040 | 0.6374 | **0.4707** | 0.1335 | 0.3528 |
-| Claude-haiku4.5 | Few-shot | Text-only | 0.5349 | 0.3724 | 0.4034 | **0.1152** | **0.3774** |
-| Claude-haiku4.5 | Zero-shot | Text-only | 0.4197 | **0.5127** | 0.4403 | 0.1300 | 0.3603 |
+| Claude-haiku4.5 | Few-shot | Text-only | **0.5349** | 0.3724 | 0.4034 | **0.1152** | **0.3774** |
+| Claude-haiku4.5 | Zero-shot | Text-only | 0.4197 | 0.5127 | 0.4403 | 0.1300 | 0.3603 |
 | Claude-haiku4.5 | Few-shot | Image-only | 0.1703 | 0.3538 | 0.1875 | 0.3022 | 0.1151 |
 | Claude-haiku4.5 | Zero-shot | Image-only | 0.3212 | 0.2618 | 0.2651 | 0.1468 | 0.3002 |
-| Qwen2.5-VL-32B-Instruct | Few-shot | Multimodal | 0.3395 | 0.6108 | **0.4149** | 0.1698 | 0.2496 |
-| Qwen2.5-VL-32B-Instruct | Zero-shot | Multimodal | 0.2963 | **0.6590** | 0.3843 | 0.2265 | 0.1943 |
-| Qwen2.5-VL-32B-Instruct | Few-shot | Text-only | 0.6255 | **0.3856** | 0.3983 | 0.1365 | 0.3031 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Multimodal | 0.3395 | **0.6108** | 0.4149 | 0.1698 | 0.2496 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Multimodal |0.4668 | 0.5847 | **0.4638** |  0.1563 | 0.3009 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Text-only | **0.6255** | 0.3856 | 0.3983 | 0.1365 | 0.3031 |
 | Qwen2.5-VL-32B-Instruct | Zero-shot | Text-only | 0.6207 | 0.2772 | 0.3221 | **0.1223** | **0.3418** |
 | Qwen2.5-VL-32B-Instruct | Few-shot | Image-only | 0.4089 | 0.3473 | 0.3357 | 0.1424 | 0.2928 |
 | Qwen2.5-VL-32B-Instruct | Zero-shot | Image-only | 0.4596 | 0.3426 | 0.3703 | 0.1337 | 0.3167 |
-| Qwen2.5-VL-7B-Instruct | Few-shot | Multimodal | **0.4275** | 0.2940 | **0.2541** | 0.1480 | 0.2992 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Multimodal | 0.4275 | **0.2940** | **0.2541** | 0.1480 | 0.2992 |
 | Qwen2.5-VL-7B-Instruct | Few-shot | Text-only | 0.5656 | 0.1309 | 0.1554 | **0.1285** | **0.3258** |
 | Qwen2.5-VL-7B-Instruct | Zero-shot | Text-only | **0.6162** | 0.1374 | 0.1322 | 0.1367 | 0.2937 |
 | Qwen2.5-VL-7B-Instruct | Few-shot | Image-only | 0.3343 | 0.2006 | 0.1863 | 0.1503 | 0.2745 |
