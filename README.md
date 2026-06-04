@@ -1,4 +1,4 @@
-# 1 Dataset Construction
+# 1 Dataset Construction and Annotation
 ## 1.1 The Overall Construction Process
 Figure 1 illustrates the systematic workflow employed to build the PsyHookBench dataset, covering stages from raw data collection to final expert verification. It offers a visual roadmap of our methodology to ensure the reproducibility and quality of the annotation process.
 <div align="center">
@@ -93,7 +93,21 @@ Given the difficulty and complexity of the task, we further combined each hook's
 | **8 Authority** | high AC1; high F1 | 0, 1, 2, 4, 5 | 3 | Same as Hook 7. |
 
 ## 1.7 Expert referee judgment criteria
+**(1) Dynamic Triggering Conditions (Metric-Driven Routing):**
 
+Unlike standard pipelines that only trigger review on tied votes, our arbitration is triggered by a **5-vote ensemble system** using hook-specific statistical thresholds (based on Precision, Recall, and AC1 behaviors), as detailed in 1.6.
+
+**(2) Arbitrator Profile:**
+
+The arbitration panel strictly consists of senior researchers with domain expertise in communication studies and psychology, ensuring theoretical fidelity.
+
+**(3) Resolution Criteria (How Experts Decide):**
+
+Once a sample is routed to the experts, they do not rely on subjective feelings but evaluate edge cases using a hierarchical rule set:
+
+- **Multimodal Conflict Rule:** If textual and visual cues contradict or invoke different hooks, the expert determines the *dominant hook* based on the primary focal point of the cover image combined with the title's leading clause.
+- **Discard Policy:** If the expert panel cannot reach a unanimous decision on the dominant psychological mechanism after applying the rules, the sample is deemed too noisy and is strictly discarded to maintain benchmark quality.
+  
 # 2 Dataset Statistics
 Table 6 provides a multifaceted overview of the dataset scale, including the distribution of image and video modalities, alongside linguistic and engagement metrics such as title lengths and like counts. 
 
@@ -458,15 +472,31 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 # 4 Ethics and High-risk Samples
 ## 4.1 Definitions of Ethical Risks Detail
 
-Following the taxonomy of Biyani et al. (2016) and the specific ecological characteristics of Xiaohongshu, we define the four categories of ethical risks as follows:
+We refer to the classification of clickbait proposed by Biyani et al. (2016) and categorize them according to Intent (Benign vs. Malicious) and Real damage potential. Combined with the content characteristics of the Xiaohongshu platform, we ultimately define content featuring the following four types of attributes as ethically risky:
 
-* **Omission:** Content where the headline promises specific information (e.g., "The secret to...") that is completely absent from the actual post or images.
-* **Mismatch:** The content promised in the title and cover contradicts or fails to align with the actual expanded content.
-* **Inflammatory:** The use of vulgar language, excessive emotional manipulation, or provocative phrasing designed to incite conflict or verbal abuse.
-* **Adverse Influence:** Content promoting illegal activities, harmful social trends, or behavior that violates established moral standards and platform community guidelines.
+(1) missing (empty promises): Preview content is supposed to deliver expected core content to users via clear value propositions, informational cues or content previews (such as practical tips, tutorials, answers to event-related questions, problem-solving solutions and specific experience sharing). After users click to expand the content, none of the core content promised in the preview is provided. This excludes normal posts on Xiaohongshu featuring personal sharing where decorative captions have loose connections with personalized images like selfies or casual daily snapshots.
+
+(2) wrong (factual contradiction): The core information, viewpoints and facts stated in preview content are substantially inconsistent with, contradictory to or distorted from the main body of expanded content. This excludes normal posts on Xiaohongshu featuring personal sharing where decorative captions used to create a sharing vibe have no strong correlation with personalized images like selfies or casual daily snapshots.
+
+(3) incitement (vulgar/malicious inducement): Preview content uses inappropriate or vulgar wording to excessively lure users into clicking, violating the platform’s civilized content publishing standards.
+
+(4) Harmful Content: Preview content promotes materials that run counter to national laws and regulations, public order and good morals, and platform community guidelines, or spreads vulgar, violent, illegal and immoral information that may exert negative value guidance on users.
 
 ## 4.2 clickbait annotation guidelines
+### 4.2.1 Machine Annotation
+We first refined the definitions of the four hook categories and established clear annotation boundaries based on the characteristics of social media content on Xiaohongshu, as described in Section 4.1. During the human annotation stage, four posts were excluded because annotators identified potential ethical risks. During the machine annotation stage, we designed a dedicated prompting strategy and employed the Qwen-VL-Max model to screen all 2,500 samples. The model flagged 391 posts as potentially containing ethical risks, which were subsequently subjected to expert review. After manual verification, 12 posts were identified as ethically problematic by both the model and human reviewers and were therefore removed from the benchmark.
+### 4.2.2 Expert Review
+*Goal: To delineate benign rhetorical hooks from malicious manipulation/clickbait.*
+
+- **Annotators:** 2 senior domain experts.
+- **Target:** 391 borderline/flagged samples
+- **Annotation Guidelines:** Experts evaluate each post against a strict 4-vector ethical rubric: a_missing (empty promises), b_wrong (factual contradiction), c_incitement (vulgar/malicious inducement), and d_bad (harmful manipulation, e.g., polarization). A post is deemed "safe" if and only if all vectors score 0.
+- **Arbitration Criteria (Safety-First Policy):**
+    - *Triggering Condition:* If the 2 experts disagree on *any* of the 4 vectors (e.g., Expert A flags c_incitement, Expert B does not).
+    - *Resolution Rule:* A third independent ethics reviewer is introduced. However, we strictly apply a "Conservative Veto Rule": if the conflict cannot be resolved to a unanimous consensus of absolute safety (all 0s) after joint review, the sample is classified as "toxic/manipulative" and permanently discarded from the benign benchmark.
+
 ## 4.3 Specific boundary cases (clearly distinguishing benign traffic-generating titles from clickbait content)
+
 ## 4.4 Detailed Related Work Supplement
 With the increasing complexity of model inputs, several benchmarks have been developed to evaluate interleaved multimodal sequences and temporal integration. For instance, **Seed-Bench** emphasizes video understanding and temporal logic, while **BLINK** introduces visual prompts to test sensitivity to critical visual evidence. Additionally, **NLVR2** is frequently employed to assess fine-grained discrimination through paired-image reasoning. These benchmarks collectively establish a multi-dimensional landscape for evaluating the technical limits of VLMs across various input modalities and task complexities.
 
@@ -612,3 +642,57 @@ Therefore, formally speaking, information cards containing authoritative endorse
 * **Social proof:** Numbers such as "220,000 people have viewed...".
 
 ## 5.2 Detailed labeling norms and rules for psychological hooks
+
+### **I.Core Principles**
+
+1. Project Objective: Identify and categorize psychological hooks deliberately crafted by social media content creators to boost click-through rates.
+2. Key Commitment: Labeling shall focus on creators’ intentions; personal preferences must be set aside and all operations shall follow given instructions.
+3. Labeling Platform: http://124.221.85.147:5000
+
+### **II. Pre-Labeling Preparations**
+
+1. Classification Familiarization: Gain adequate understanding and mastery of the subsequent classification standards and definitions.
+2. Environment Preparation: Complete labeling in a quiet and distraction-free setting; each labeling session shall last no more than 90 minutes with intermittent breaks. (It is recommended to arrange labeling schedules in advance to avoid concentrated bulk labeling.)
+3. Requirements: Follow specified instructions and perform labeling with prudence and accountability; random sampling quality inspections will be conducted via the backend system.
+4. Quantity for Phase Two Labeling: 441 entries
+5. Labeling Procedures:
+    - (1) Check the titles and cover images displayed on the left side: Select applicable multiple options for psychological hooks solely based on the combined content of covers and titles.
+    - (2) Scroll up and down plus swipe left and right: check the detailed information of the content on the left and determine whether there are ethical risks.
+6. Instructions for Using the Labeling Platform:
+- (1) Enter the interface, select the serial number and name entered previously.
+- (2) All labeled content is automatically saved, allowing users to return for review or modification at any time.
+- (3) Users may freely jump to specified entries via content serial numbers in the upper right corner of the page.
+
+### **III. Category Classification**
+
+Survival-driven type: Tap into humans’ innate focus on survival resources and safety to trigger behaviors of resource acquisition or self-protection.
+
+Cognition-driven type: Leverage people’s need to resolve uncertainty and cognitive dissonance to spark knowledge-seeking or corrective behaviors.
+
+Social-driven type: Draw on human demands for interpersonal group bonds to induce behaviors including seeking belonging and support, ostracism and teasing, or competition.
+
+### **IV. Operationalization of Psychological Hooks (Core Definition + Operational Judgment + Reference Clues)**
+
+Please refer to section 5.1.
+
+### **V. Explanation of Scoring Criteria for Multiple-Choice Items**
+
+0 point = Absent: No clues relevant to the psychological mechanism appear in the content, with no correlation between the two at all.
+
+1 point = Uncertain: Extremely vague and unconfirmable clues about the mechanism exist in the content.
+
+2 points = Suspected presence: Potential or analogous clues can be identified, showing a perceptible tendency of connection to the psychological mechanism.
+
+3 points = Evident presence: Clear and specific clues are included that directly point to the target psychological mechanism.
+
+### **VI. Ethical Review: Check for the following ethical risks (multiple selections allowed):**
+
+a: Omission: Content promised in the title is missing in the elaborated text
+
+b: Inconsistency: Discrepancy between the title and detailed content
+
+c: Incitement: Improper or vulgar wording is adopted
+
+d: Adverse impact: The title promotes content violating laws or morality
+
+e: No ethical risks
