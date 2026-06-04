@@ -1,0 +1,617 @@
+# 1 Dataset Construction
+## 1.1 The Overall Construction Process
+Figure 3 illustrates the systematic workflow employed to build the PsyHookBench dataset, covering stages from raw data collection to final expert verification. It offers a visual roadmap of our methodology to ensure the reproducibility and quality of the annotation process.
+<div align="center">
+  <img src="./construction_process.png" width="800px">
+  <p><b>Figure 3: Systematic workflow for building the PsyHookBench dataset.</b></p>
+</div>
+
+## 1.2 Annotation Platform Interface
+Our specialized annotation platform provides a structured environment for the annotators. The interface, as illustrated in Figure 2, displays comprehensive image-text content, operational definitions, scoring criteria, and intuitive selection boxes to facilitate precise labeling.
+<div align="center">
+  <img src="./platform GUI.png" width="800px">
+  <p><b>Figure 2: Annotation platform GUI.</b></p>
+</div>
+
+## 1.3 Performance Different Annotators
+To ensure the reliability of the dataset and filter out potential malicious annotations, we calculated the mean, variance, and standard deviation of the scores assigned by five individual human annotators. This statistical oversight ensures that each annotator's output remains within a reasonable and consistent range. You can see the result in Table 1.Table 3 summarizes the mean ($\mu$), variance ($\sigma^2$), and standard deviation ($\sigma$) for each of the eight predefined hook categories.
+
+### Table 1: Performance statistics for different annotators
+
+| Statistic | Ann. 1 | Ann. 2 | Ann. 3 | Ann. 4 | Ann. 5 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Mean** | 0.8571 | 0.2710 | 0.4368 | 0.5816 | 0.4354 |
+| **Variance** | 1.3946 | 0.6114 | 0.8050 | 1.2292 | 0.8870 |
+| **Std. Dev.** | 1.1809 | 0.7819 | 0.8972 | 1.1087 | 0.9418 |
+
+### Table 3: Statistical results of various indicators
+
+| Hook ID | Mean ($\mu$) | Variance ($\sigma^2$) | Std. Dev. ($\sigma$) |
+| :--- | :---: | :---: | :---: |
+| 1 | 0.0544 | 0.0977 | 0.3126 |
+| 2 | 0.5088 | 0.2459 | 0.1568 |
+| 3 | 1.4000 | 1.8872 | 1.3738 |
+| 4 | 0.4576 | 0.8985 | 0.9479 |
+| 5 | 0.5791 | 0.7027 | 0.8383 |
+| 6 | 0.8290 | 1.2347 | 1.1112 |
+| 7 | 0.1569 | 0.2956 | 0.5437 |
+| 8 | 0.1451 | 0.3427 | 0.5854 |
+
+## 1.4 Inter-Annotator Agreement Analysis
+As Table 2 shows, we also computed Gwet's AC1 to assess inter-annotator agreement. 
+
+At a finer granularity, we observed substantial AC1 variance across different hooks. This highlights the difference between hooks with salient, easily identifiable cues and those that require stronger intention sensing and cognitive inference. In particular, two hooks with AC1 below $0.6$---*Information gap* ($0.07$) and *Ingroup Identification / Outgroup Distinction* ($0.42$)---appear more distinctive in social media contexts. Their annotation relies not only on observable cues but also on higher-level inference, and they are more susceptible to platform noise and subjective factors (e.g., over-generalization and audience background; see Appendix for details). Therefore, our pipeline of **thresholding, voting and expert rechecking for edge cases** is necessary and reasonable.
+
+Moreover, the high agreement for *FOMO*, *Social Comparison*, and *Authority Endorsement* further validates the quality of our annotators. The final agreement results, Macro-AC1 ($0.68$) and Micro-AC1 ($0.72$), are sufficient to support the development of next stage for multimodal tasks involving psychological cognition.
+
+### Table 2: Inter-rater reliability metrics across different hooks
+| Hook ID | AC1 | $P_o$ | $P_e$ |
+| :--- | :--- | :--- | :--- |
+| 1 | 0.975780 | 0.976660 | 0.036337 |
+| 2 | 0.790952 | 0.858350 | 0.322406 |
+| 3 | 0.074397 | 0.536821 | 0.499592 |
+| 4 | 0.754727 | 0.824145 | 0.283023 |
+| 5 | 0.637577 | 0.762173 | 0.343785 |
+| 6 | 0.426241 | 0.662777 | 0.412256 |
+| 7 | 0.902347 | 0.913078 | 0.109891 |
+| 8 | 0.916603 | 0.926358 | 0.116967 |
+| **Overall** | **Macro-AC1** | **0.684828** | |
+| | **Micro-AC1** | **0.720893** | ($P_o=0.8075, P_e=0.3105$) |
+
+## 1.5 Assessment of Annotation Robustness
+
+**Pre-annotation study.**
+We sampled 100 items from the seed set as a validation set and evaluated GPT-4o under different temperatures, different numbers of sampling rounds, and different text--image ratios in the retrieved context. The results show an overall F1 around 0.5 (Macro-F1: 0.5103; Micro-F1: 0.4858; Average Recall: 0.6888; see Table 4. Since 87\% of our labels are zeros (i.e., hook absent), achieving a Macro-F1 of 0.5 in this long-tailed multi-label setting suggests that the model has captured substantial regularities, while remaining weaker on edge cases.
+We further compared the model against the average performance of human annotators before expert arbitration. The human baseline (Macro-F1: 0.5191; Micro-F1: 0.5435) indicates that the proposed strategy allows the model to reach a non-expert human level. This also highlights the complexity of the task and motivates our subsequent expert diversion and rechecking strategy.
+
+### Table 4: Test results of pre-annotation under different conditions
+| Metric | title:image=1:1 (5 rounds) | title:image=1:1 (1 round) | title:image=4:1 (1 round) | Human Annotation |
+| :--- | :--- | :--- | :--- | :--- |
+| Macro-F1 | 0.5103 | 0.4860 | 0.5429 | 0.5191 |
+| Micro-F1 | 0.4858 | 0.4816 | 0.5591 | 0.5435 |
+| Average Recall | 0.6888 | 0.6830 | 0.7017 | 0.6699 |
+
+**Formal model annotation.**
+We ultimately adopted a 5-round labeling configuration with temperature set to 0.5 for each round, together with retrieval from two weighted vector database. For Hook 01, 02, 03, 04, and 06, we used a vector database with a text--image retrieval weight ratio of 4:1. For Hook 05, 07, and 08, we used a vector database with a text--image retrieval weight ratio of 1:1.
+
+**RAG Hyperparameters.**
+We used Chinese-CLIP (ViT-B/16 + RoBERTa-wwm-base) to encode multimodal inputs into a shared 512-dimensional embedding space. FAISS was adopted as the retrieval engine with top-k=4. For retrieval weighting, text/image ratios were set to 0.8/0.2 for semantic-oriented hooks (H1, H2, H3, H4, H6) and 0.5/0.5 for visually-dependent hooks (H5, H7, H8). Each query retrieved four reference examples for in-context learning. GPT-4o was used for inference with temperature=0.0.
+
+## 1.6 Expert diversion and rechecking strategy.**
+Given the difficulty and complexity of the task, we further combined each hook's AC1 values and pre-annotation performance (F1 and recall) to specify, for each hook, which voting outcomes require expert rechecking. We refer to this as a **traffic-light diversion strategy**. Under the *green-light* condition, we accept the machine voting outcome as the final label; under the *red-light* condition, the label must be reviewed by experts.Refer to Table 5 for the detail.
+
+### Table 5: Conditions and core logic for expert diversion and rechecking
+| Hook | Feature | Green votes | Red votes | Core logic |
+| :--- | :--- | :--- | :--- | :--- |
+| **1 FOMO** | low Precision; high Recall; high AC1 | 0, 1, 2 | 3, 4, 5 | The model may randomly output "1"; expert review is triggered for $>50\%$ votes to remove hallucinations. |
+| **2 Gain Appeal** | medium AC1; acceptable F1/Precision | 0, 1, 4, 5 | 2, 3 | The model behaves normally; only split votes are sent to expert review. |
+| **3 Information-gap** | low AC1; medium F1/Recall | 0, 1, 4, 5 | 2, 3 | Ambiguous boundary cues can mislead the model; expert review targets mid-range votes. |
+| **4 Anomaly/Novelty** | low Precision; high Recall; high AC1 | 0, 1, 2 | 3, 4, 5 | Same as Hook 1. |
+| **5 Perceptual Contrast** | medium AC1; acceptable F1/Precision | 0, 1, 4, 5 | 2, 3 | Same as Hook 2. |
+| **6 Ingroup/Outgroup** | low Recall; high Precision; low AC1 | 0, 4, 5 | 1, 2, 3 | The model tends to avoid uncertain "1" labels and thus misses cues; expert review focuses on mid and low votes. |
+| **7 Social Comparison** | high AC1; high F1 | 0, 1, 2, 4, 5 | 3 | The model is reliable; only disputed votes require expert review. |
+| **8 Authority** | high AC1; high F1 | 0, 1, 2, 4, 5 | 3 | Same as Hook 7. |
+
+## 1.7 Expert referee judgment criteria
+
+# 2 Dataset Statistics
+Table 1 provides a multifaceted overview of the dataset scale, including the distribution of image and video modalities, alongside linguistic and engagement metrics such as title lengths and like counts. 
+
+## 2.1 Table 1: Dataset Statistics
+
+| Statistic Category | Metric | Value |
+| :--- | :--- | :--- |
+| **Overview** | Total Count | 3041 |
+| | Image Count | 1233 (40.55%) |
+| | Video Count | 1808 (59.45%) |
+| **Title & Likes** | Maximum Title Length | 36 |
+| | Average Title Length | 15.05 |
+| | Maximum Like Count | 313,000 |
+| | Average Like Count | 7,248.79 |
+
+## 2.2 Dataset Composition Details
+Table 2 provides a detailed breakdown of the number of psychological hooks identified per sample, distinguishing between single-hook, composite-hook (including the specific distribution of multiple labels), and no-hook instances. This granular view supplements the general dataset statistics by highlighting the co-occurrence frequency of different psychological mechanisms. Table 3 illustrates the distribution of data across various social media content categories.
+
+## Table 2: Number of psychological hooks for each sample
+
+| Statistic | Number |
+| :--- | :--- |
+| **1 Hook** | 1339 (44.03%) |
+| **Composite Hook** | **Total: 837** <br> 2 hooks: 626 (74.79%) <br> 3 hooks: 179 (21.39%) <br> 4 hooks: 27 (3.22%) <br> 5 hooks: 4 (0.47%) <br> 6 hooks: 1 (0.1%) |
+| **No Hook** | 865 (28.6%) |
+
+## 2.3 Table 3: Content source categories
+
+| Category | Count | Percentage |
+| :--- | :--- | :--- |
+| **Keywords search** | 81 | 2.66% |
+| **Recommend** | 364 | 11.97% |
+| **Fashion** | 236 | 7.76% |
+| **Food** | 308 | 10.13% |
+| **Cosmetic** | 223 | 7.33% |
+| **Movie and TV** | 259 | 8.85% |
+| **Career** | 273 | 8.98% |
+| **Love** | 307 | 10.10% |
+| **Household** | 229 | 7.53% |
+| **Gaming** | 253 | 8.32% |
+| **Travel** | 269 | 8.85% |
+| **Fitness** | 239 | 7.86% |
+
+To further characterize the psychological landscape of our data, Table 4 enumerates the occurrences of the eight predefined hook categories and their respective annotation quality levels, distinguishing between high-consensus samples and complex edge cases. Together, these statistics offer a granular foundation for understanding the data diversity and labeling rigor underlying our research.
+
+## 2.4 Table 4: 8 Psychological Hooks Counts & Quality
+
+| Hook Category | Count |
+| :--- | :--- |
+| **Gain Appeal** | 1153 |
+| **Information-gap** | 658 |
+| **Perceptual Contrast** | 589 |
+| **Ingroup Identification / Outgroup Distinction** | 402 |
+| **Anomaly and novelty** | 226 |
+| **Social Comparison** | 102 |
+| **Authority Endorsement** | 69 |
+| **Fear Of Missing Out (FOMO)** | 42 |
+| --- | --- |
+| **Only High Consensus** | 1620 |
+| **High Consensus and Edge Cases** | 341 |
+| **Only Edge Cases** | 215 |
+
+## 2.5 Table 5:Distribution of Edge Cases and High-Consensus Samples
+| Category | Count |
+|----------|------:|
+| Edge Cases Only | 215 |
+| High-Consensus Only | 1620 |
+| Edge Cases and High-Consensus | 341 |
+
+## 2.6 Additional Analysis of the Complexity Paradox
+
+To further investigate the observed **Complexity Paradox**, we conducted three complementary analyses: **(1) Label Frequency Analysis**, **(2) Class Prior Analysis**, and **(3) Content Category Analysis**. These analyses aim to determine whether the paradoxical performance differences between simple and complex psychological-hook samples could be attributed to differences in label frequency, label density, or content-domain composition rather than the intrinsic complexity of the hooks themselves.
+
+### 2.6.1 Label Frequency Analysis
+
+Table A1 reports the positive occurrence rates of the eight psychological hooks in single-hook and composite-hook samples. Composite-hook samples contain substantially higher frequencies across all hook categories, suggesting that the complexity paradox cannot be explained by a lack of positive examples in the training distribution.
+
+**Table A1. Positive Label Rates Across Single-Hook and Composite-Hook Samples**
+
+| Hook | Single-Hook | Composite-Hook |
+|--------|--------:|--------:|
+| H1 (FOMO) | 0.45% | 4.30% |
+| H2 (Gain Appeal) | 44.51% | 66.55% |
+| H3 (Information Gap) | 22.48% | 42.65% |
+| H4 (Novelty) | 5.38% | 18.40% |
+| H5 (Perceptual Contrast) | 13.29% | 49.10% |
+| H6 (Group Identification) | 10.60% | 33.57% |
+| H7 (Social Comparison) | 1.79% | 9.32% |
+| H8 (Authority Endorsement) | 1.49% | 5.85% |
+
+### 2.6.2 Class Prior Analysis
+
+We further compared the label-density distributions between the two subsets. As expected, single-hook samples contain exactly one positive hook, whereas composite-hook samples contain between two and six hooks. The average number of hooks per sample in the composite subset is 2.30.
+
+**Table A2. Label Density Statistics**
+
+| Subset | Samples | Avg. Labels | Median | Min | Max |
+|---------|---------:|---------:|---------:|---------:|---------:|
+| Single-Hook | 1339 | 1.00 | 1 | 1 | 1 |
+| Composite-Hook | 837 | 2.30 | 2 | 2 | 6 |
+
+**Table A3. Label Count Distribution in Composite Samples**
+
+| Number of Hooks | Percentage |
+|---------|---------:|
+| 2 | 74.79% |
+| 3 | 21.39% |
+| 4 | 3.23% |
+| 5 | 0.48% |
+| 6 | 0.12% |
+
+These results indicate that composite samples are indeed more densely labeled; however, the performance patterns observed in the main experiments cannot be solely attributed to class-prior differences.
+
+### 2.6.3 Content Category Analysis
+
+To exclude the possibility that the complexity paradox is driven by domain-specific content distributions, we compared the category composition of single-hook and composite-hook subsets. The two subsets exhibit highly similar distributions across major content domains such as career, cosmetics, fashion, fitness, food, gaming, household products, travel, and recommendation content.
+
+The largest categories in both subsets are recommendation, fitness-related content, household products, food, fashion, and career topics, indicating that domain composition remains broadly comparable across complexity levels.
+
+Overall, the results suggest that the complexity paradox is unlikely to be explained by differences in label frequency, label density, or content-domain composition alone.
+
+# 3 Experiments and Analysis
+## 3.1 Few-shot Summary cross 9 models (Multimodal) + human annotation + Invalid Output Analysis
+
+### Table 1: Few-shot Summary cross 9 models (Multimodal)
+| ModelName | Macro-Recall | Macro-Precision | Macro-F1 | HammingLoss | EMR |
+| --- | --- | --- | --- | --- | --- |
+| Claude-haiku4.5 | **0.7829** | 0.3458 | 0.4590 | 0.1785 | 0.2303 |
+| Claude3.7sonnet | 0.7329 | 0.4412 | 0.5095 | 0.1319 | 0.3158 |
+| DeepSeek-VL2 | 0.3962 | 0.3124 | 0.2135 | 0.2253 | 0.1564 |
+| Gemini 2.0 Flash | 0.7462 | 0.4014 | 0.4548 | 0.1828 | 0.2233 |
+| Gemma3-4b | 0.2906 | 0.4376 | 0.2502 | 0.1468 | 0.2992 |
+| GLM-4.1V-9B-Thinking | 0.3443 | 0.4529 | 0.2790 | 0.1609 | 0.2965 |
+| Qwen2.5-VL-32B-Instruct | 0.6108 | 0.3395 | 0.4149 | 0.1698 | 0.2496 |
+| Qwen2.5-VL-7B-Instruct | 0.2940 | 0.4275 | 0.2541 | 0.1480 | 0.2992 |
+| Qwen2.5-VL-3B-Instruct | 0.1465 | 0.3173 | 0.0815 | 0.1778 | 0.2097 |
+| Yi-Vision-v2 | 0.6175 | **0.5370** | **0.5379** | **0.1021** | **0.4170** |
+| Human annotation | 0.6673 | 0.4872 | 0.5164 | 0.1477 | 0.3148 |
+
+## 3.2 Per-Hook Precision, Recall, and F1 Scores
+
+To provide a more fine-grained evaluation of model behavior, Table 2 reports the precision (P), recall (R), and F1 score for each psychological hook across all evaluated models. Results reveal substantial variation across hook categories. Gain Appeal (H2) consistently achieves the highest performance across models, while FOMO (H1), Social Comparison (H7), and Authority Endorsement (H8) remain considerably more challenging.
+
+**Table 2. Per-Hook Precision (P), Recall (R), and F1 Scores**
+
+| Model | H1 (P/R/F1) | H2 (P/R/F1) | H3 (P/R/F1) | H4 (P/R/F1) | H5 (P/R/F1) | H6 (P/R/F1) | H7 (P/R/F1) | H8 (P/R/F1) |
+|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| Claude-3.7-Sonnet | 0.188/0.875/0.310 | 0.800/0.833/0.816 | 0.672/0.554/0.607 | 0.262/0.795/0.395 | 0.631/0.562/0.594 | 0.313/0.879/0.461 | 0.309/0.608/0.410 | 0.355/0.758/0.483 |
+| Gemini-2.0-Flash | 0.036/1.000/0.069 | 0.675/0.926/0.781 | 0.567/0.699/0.626 | 0.211/0.895/0.342 | 0.696/0.410/0.516 | 0.431/0.706/0.535 | 0.167/0.742/0.272 | 0.429/0.591/0.497 |
+| Yi-Vision-V2 | 0.232/0.800/0.360 | 0.808/0.780/0.794 | 0.611/0.640/0.625 | 0.295/0.740/0.421 | 0.762/0.419/0.541 | 0.582/0.513/0.546 | 0.494/0.412/0.449 | 0.512/0.636/0.568 |
+| Qwen2.5-VL-32B | 0.130/0.525/0.209 | 0.672/0.794/0.728 | 0.447/0.589/0.508 | 0.160/0.717/0.262 | 0.487/0.531/0.508 | 0.376/0.715/0.493 | 0.177/0.516/0.264 | 0.266/0.500/0.347 |
+| GLM-4.1V | 0.046/0.900/0.087 | 0.775/0.306/0.439 | 0.493/0.110/0.181 | 0.261/0.397/0.315 | 0.701/0.210/0.324 | 0.574/0.166/0.258 | 0.193/0.392/0.259 | 0.581/0.273/0.371 |
+| Qwen2.5-VL-7B | 0.098/0.650/0.171 | 0.830/0.409/0.548 | 0.455/0.163/0.240 | 0.163/0.530/0.250 | 0.560/0.153/0.241 | 0.591/0.031/0.059 | 0.304/0.144/0.196 | 0.419/0.273/0.330 |
+| Gemma4-4B | 0.099/0.675/0.172 | 0.826/0.408/0.546 | 0.461/0.155/0.232 | 0.171/0.539/0.260 | 0.580/0.150/0.238 | 0.667/0.048/0.089 | 0.293/0.124/0.174 | 0.405/0.227/0.291 |
+| DeepSeek-VL2 | 0.024/0.825/0.046 | 0.709/0.575/0.635 | 0.522/0.018/0.036 | 0.221/0.324/0.263 | 0.529/0.141/0.223 | 0.332/0.183/0.236 | 0.105/0.361/0.163 | 0.058/0.742/0.107 |
+| Qwen2.5-VL-3B | 0.032/0.650/0.062 | 0.689/0.027/0.052 | 0.333/0.005/0.009 | 0.235/0.037/0.063 | 0.377/0.148/0.213 | 0.373/0.052/0.092 | 0.444/0.041/0.076 | 0.054/0.212/0.086 |
+
+For reference, the overall Macro-F1 scores of the evaluated models are: Yi-Vision-V2 (0.538), Claude (0.509), Gemini (0.455), Qwen2.5-VL-32B (0.415), GLM-4.1V (0.279), Qwen2.5-VL-7B (0.254), Gemma4-4B (0.250), DeepSeek-FewShot (0.214), and Qwen3B (0.082). These detailed per-hook results provide additional insights into model strengths and weaknesses beyond aggregate evaluation metrics.
+
+## 3.3 Pairwise Bootstrap Significance Test
+
+To evaluate whether the observed performance differences between models are statistically significant, we conducted a pairwise bootstrap significance test based on Macro-F1.
+
+For each model pair, we performed **1,000 bootstrap resampling iterations** with replacement. In each iteration, a bootstrap sample of the same size as the original test set was drawn, and the Macro-F1 score was recomputed for both models. The performance difference was defined as:
+
+\[\Delta \text{Macro-F1}=\text{Macro-F1}_{A}-\text{Macro-F1}_{B}\]
+
+The empirical distribution of \(\Delta \text{Macro-F1}\) was then used to estimate a **95% confidence interval (CI)** based on the 2.5th and 97.5th percentiles.
+
+A difference was considered statistically significant when the corresponding 95% confidence interval did not include zero.
+
+### Table 3. Pairwise Bootstrap Significance Test Results
+
+| Model A | Model B | Δ Macro-F1 | 95% CI Lower | 95% CI Upper | Significant |
+|----------|----------|----------:|----------:|----------:|----------|
+| Yi-Vision-V2 | Qwen3B | 0.455967 | 0.433135 | 0.480228 | Yes |
+| Claude | Qwen3B | 0.427526 | 0.405401 | 0.448508 | Yes |
+| Gemini | Qwen3B | 0.373188 | 0.352084 | 0.393832 | Yes |
+| Qwen2.5-VL-32B | Qwen3B | 0.332849 | 0.311390 | 0.354032 | Yes |
+| Claude | DeepSeek-FewShot | 0.295583 | 0.275593 | 0.313719 | Yes |
+| Claude | Gemma4-4B | 0.259030 | 0.235406 | 0.282136 | Yes |
+| Claude | Qwen2.5-VL-7B | 0.255755 | 0.231213 | 0.279593 | Yes |
+| Claude | GLM-4.1V | 0.231029 | 0.207133 | 0.254928 | Yes |
+| Gemini | Gemma4-4B | 0.205405 | 0.182935 | 0.227444 | Yes |
+| Gemini | Qwen2.5-VL-7B | 0.200868 | 0.178629 | 0.224293 | Yes |
+| GLM-4.1V | Qwen3B | 0.196357 | 0.173459 | 0.219796 | Yes |
+| Gemini | GLM-4.1V | 0.175721 | 0.152185 | 0.198028 | Yes |
+| Qwen2.5-VL-7B | Qwen3B | 0.172408 | 0.150330 | 0.195365 | Yes |
+| Gemma4-4B | Qwen3B | 0.168403 | 0.145184 | 0.191266 | Yes |
+| DeepSeek-FewShot | Qwen3B | 0.131853 | 0.115060 | 0.149005 | Yes |
+| Claude | Qwen2.5-VL-32B | 0.094814 | 0.076787 | 0.114115 | Yes |
+| Claude | Gemini | 0.054660 | 0.038025 | 0.070218 | Yes |
+| Gemini | Qwen2.5-VL-32B | 0.039731 | 0.021868 | 0.057373 | Yes |
+| GLM-4.1V | Qwen2.5-VL-7B | 0.024664 | 0.000571 | 0.047702 | Yes |
+| Gemma4-4B | Qwen2.5-VL-7B | -0.003784 | -0.015918 | 0.008976 | No |
+| Claude | Yi-Vision-V2 | -0.027914 | -0.047154 | -0.007878 | Yes |
+| Gemma4-4B | GLM-4.1V | -0.028831 | -0.053784 | -0.003932 | Yes |
+| DeepSeek-FewShot | Gemma4-4B | -0.036388 | -0.059263 | -0.013953 | Yes |
+| DeepSeek-FewShot | Qwen2.5-VL-7B | -0.041175 | -0.065480 | -0.016843 | Yes |
+| DeepSeek-FewShot | GLM-4.1V | -0.064488 | -0.087032 | -0.043508 | Yes |
+| Gemini | Yi-Vision-V2 | -0.083130 | -0.102507 | -0.063832 | Yes |
+| Qwen2.5-VL-32B | Yi-Vision-V2 | -0.122824 | -0.143938 | -0.102071 | Yes |
+| GLM-4.1V | Qwen2.5-VL-32B | -0.136034 | -0.161833 | -0.111193 | Yes |
+| Qwen2.5-VL-7B | Qwen2.5-VL-32B | -0.160791 | -0.186942 | -0.136057 | Yes |
+| Gemma4-4B | Qwen2.5-VL-32B | -0.164152 | -0.187385 | -0.139664 | Yes |
+| DeepSeek-FewShot | Qwen2.5-VL-32B | -0.200932 | -0.219573 | -0.182156 | Yes |
+| DeepSeek-FewShot | Gemini | -0.241107 | -0.259506 | -0.222852 | Yes |
+| GLM-4.1V | Yi-Vision-V2 | -0.258827 | -0.283277 | -0.235445 | Yes |
+| Qwen2.5-VL-7B | Yi-Vision-V2 | -0.283914 | -0.308014 | -0.258055 | Yes |
+| Gemma4-4B | Yi-Vision-V2 | -0.286846 | -0.310146 | -0.263223 | Yes |
+| DeepSeek-FewShot | Yi-Vision-V2 | -0.323532 | -0.345370 | -0.300036 | Yes |
+
+### Discussion
+
+The bootstrap analysis demonstrates that the majority of pairwise model differences are statistically significant under the 95% confidence criterion. Among all 36 pairwise comparisons, only one model pair, **Gemma4-4B vs. Qwen2.5-VL-7B**, exhibits a confidence interval that includes zero, indicating no statistically significant difference between the two models. All remaining comparisons show statistically significant performance differences.
+
+Notably, **Yi-Vision-V2** significantly outperforms all other evaluated models, while **Qwen3B** consistently performs significantly worse than the remaining models. The strongest statistically significant difference is observed between **Yi-Vision-V2** and **Qwen3B** (\(\Delta\)Macro-F1 = 0.456, 95% CI [0.433, 0.480]).
+
+## 3.4 Analysis of Frequent Multi-Hook Combinations
+
+We additionally analyzed the most common hook combinations containing two or more psychological hooks. Table A6 lists the most frequently occurring combinations in the dataset.
+
+**Table 4. Most Frequent Multi-Hook Combinations**
+
+| Combination | Count |
+|------------|------:|
+| H2 + H5 | 128 |
+| H2 + H6 | 98 |
+| H2 + H3 | 93 |
+| H3 + H5 | 75 |
+| H2 + H4 | 44 |
+| H2 + H5 + H6 | 39 |
+| H3 + H6 | 38 |
+| H3 + H4 | 31 |
+| H2 + H3 + H5 | 23 |
+| H5 + H6 | 23 |
+
+We further computed the average Macro-F1 across all nine evaluated models for each combination.
+
+### Easiest Combinations
+
+**Table 5. Highest-Performing Hook Combinations**
+
+| Combination | Count | Avg. Macro-F1 |
+|------------|------:|------:|
+| H2 + H3 + H5 | 23 | 0.194 |
+| H2 + H5 + H6 | 39 | 0.182 |
+
+### Hardest Combinations
+
+**Table 6. Lowest-Performing Hook Combinations**
+
+| Combination | Count | Avg. Macro-F1 |
+|------------|------:|------:|
+| H3 + H6 | 38 | 0.106 |
+| H5 + H6 | 23 | 0.103 |
+
+These results indicate that not all composite-hook samples exhibit the same level of difficulty. Certain combinations involving information-gap and group-identification cues (e.g., H3+H6) remain consistently challenging across models, whereas combinations dominated by gain-appeal and perceptual-contrast cues are comparatively easier to recognize.
+
+## 3.5 Performance on Single-Hook and Composite-Hook Samples
+
+To further investigate model behavior under different levels of psychological-hook complexity, we separately evaluate all models on three subsets:
+
+### Table 7. Performance on Single-Hook Samples (N = 1327)
+
+| Model | Precision | Recall | Macro-F1 | Micro-F1 |
+|---------|---------:|---------:|---------:|---------:|
+| Yi-Vision-V2 | 0.5296 | 0.7255 | **0.5568** | **0.6782** |
+| Claude | 0.4014 | 0.8170 | 0.4706 | 0.6144 |
+| Gemini | 0.3759 | 0.7987 | 0.4392 | 0.5359 |
+| Qwen2.5-VL-32B | 0.3068 | 0.6679 | 0.3831 | 0.5267 |
+| Gemma4-4B | 0.4394 | 0.3810 | 0.2725 | 0.3671 |
+| Qwen2.5-VL-7B | 0.4207 | 0.3779 | 0.2641 | 0.3640 |
+| GLM-4.1V | 0.3729 | 0.3112 | 0.2262 | 0.2332 |
+| DeepSeek-FewShot | 0.3051 | 0.4337 | 0.1979 | 0.2765 |
+| Qwen3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
+
+### Table 8. Performance on Composite-Hook Samples (N = 822)
+
+| Model | Precision | Recall | Macro-F1 | Micro-F1 |
+|---------|---------:|---------:|---------:|---------:|
+| Claude | 0.6768 | 0.6990 | **0.6561** | **0.7216** |
+| Yi-Vision-V2 | 0.7545 | 0.5714 | 0.6229 | 0.6839 |
+| Gemini | 0.6084 | 0.7220 | 0.5735 | 0.6415 |
+| Qwen2.5-VL-32B | 0.5444 | 0.5884 | 0.5379 | 0.6347 |
+| GLM-4.1V | 0.5460 | 0.3632 | 0.3266 | 0.3490 |
+| Qwen2.5-VL-7B | 0.5849 | 0.2674 | 0.2881 | 0.3323 |
+| Gemma4-4B | 0.5858 | 0.2610 | 0.2775 | 0.3310 |
+| DeepSeek-FewShot | 0.4337 | 0.3859 | 0.2652 | 0.3244 |
+| Qwen3B | 0.5922 | 0.1336 | 0.0888 | 0.0976 |
+
+### Discussion
+
+Several noteworthy observations emerge from these results.
+
+First, the strongest models remain robust across both complexity levels. Yi-Vision-V2 achieves the highest Macro-F1 on single-hook samples (0.5568), while Claude achieves the highest Macro-F1 on composite-hook samples (0.6561).
+
+Second, contrary to the intuition that composite-hook samples should be more difficult, several leading models achieve substantially higher performance on composite-hook samples than on single-hook samples. For example, Claude improves from 0.4706 to 0.6561 Macro-F1, Gemini improves from 0.4392 to 0.5735, and Qwen2.5-VL-32B improves from 0.3831 to 0.5379. This phenomenon is consistent with the Complexity Paradox discussed in the main paper.
+
+Finally, all models obtain zero scores on the no-hook subset under the current evaluation protocol because no positive labels are present in these samples, making conventional multi-label precision, recall, and F1 undefined.
+
+### Table 12: Invalid Output Analysis
+
+| Model | Invalid Output Rate (%) |
+| :--- | :--- |
+| Qwen2.5-VL-3B-Instruct | 4.20 |
+| Qwen2.5-VL-7B-Instruct | 5.47 |
+| Qwen2.5-VL-32B-Instruct | 4.72 |
+| DeepSeek-VL2 | 1.15 |
+| GLM-4.1V-9B-Thinking | 1.08 |
+| Gemma3-4b | 0.31 |
+| Gemini 2.0 Flash | 2.36 |
+| Claude 3.7 Sonnet | 1.32 |
+| Yi-Vision-v2 | 1.98 |
+
+As a supplementary metric for model reliability, Table 1 reports the Invalid Output Rate for each evaluated model. This metric represents the proportion of model responses that failed to conform to the required output format (e.g., garbled text or incorrect JSON structure).
+
+## 3.6 Model Performance Across Vertical Categories
+To evaluate the model's robustness, we calculated the F1-score of the test results across different vertical data samples. The detailed performance distribution across various categories (such as career, cosmetics, and food) can be seen in the heatmap provided in Figure 1.
+<div align="center">
+  <img src="./heat map.png" width="800px">
+  <p><b>Figure 1: Performance heatmap of different models across various categories.</b></p>
+</div>
+
+## 3.7 Table 10: Zero-shot Summary cross 5 models (Multimodal)
+| ModelName | Macro-Recall | Macro-Precision | Macro-F1 | HammingLoss | EMR |
+| --- | --- | --- | --- | --- | --- |
+| Claude-haiku4.5 | 0.6374 | 0.4040 | 0.4707 | **0.1335** | **0.3528** |
+| DeepSeek-VL2 | 0.1888 | 0.2112 | 0.1054 | 0.1952 | 0.2118 |
+| Gemini 2.0 Flash | **0.7479** | **0.4264** | **0.4835** | 0.1692 | 0.2522 |
+| Qwen2.5-VL-32B-Instruct | 0.6590 | 0.2963 | 0.3843 | 0.2265 | 0.1943 |
+| Qwen2.5-VL-3B-Instruct | 0.0484 | 0.2245 | 0.0461 | 0.1431 | 0.2690 |
+
+## 3.8 Table 11: Prompt Robustness (Zero-shot)
+| ModelName | prompt | Macro-Recall | Macro-Precision| Macro-F1 | HammingLoss | EMR |
+| --- | --- | --- | --- | --- | --- | --- |
+| Qwen2.5-VL-32B-Instruct | missing optional definition | 0.6893 | 0.3870 | 0.4460 | 0.2167 | 0.1430 |
+| Qwen2.5-VL-32B-Instruct | missing CoT guide | 0.5980 | **0.4885** | **0.4881** | **0.1464** | **0.3042**|
+| Qwen2.5-VL-32B-Instruct | full prompt  | **0.7144** | 0.2963 | 0.3954 |  0.2328 | 0.191 |
+
+
+## 3.9 Table 9: Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
+| ModelName | Task | Type | Macro-Precision | Macro-Recall | Macro-F1 | HammingLoss | EMR |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Claude-haiku4.5 | Few-shot | Multimodal | 0.3458 | **0.7829** | 0.4590 | 0.1785 | 0.2303 |
+| Claude-haiku4.5 | Zero-shot | Multimodal | 0.4040 | 0.6374 | **0.4707** | 0.1335 | 0.3528 |
+| Claude-haiku4.5 | Few-shot | Text-only | 0.5349 | 0.3724 | 0.4034 | **0.1152** | **0.3774** |
+| Claude-haiku4.5 | Zero-shot | Text-only | 0.4197 | **0.5127** | 0.4403 | 0.1300 | 0.3603 |
+| Claude-haiku4.5 | Few-shot | Image-only | 0.1703 | 0.3538 | 0.1875 | 0.3022 | 0.1151 |
+| Claude-haiku4.5 | Zero-shot | Image-only | 0.3212 | 0.2618 | 0.2651 | 0.1468 | 0.3002 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Multimodal | 0.3395 | 0.6108 | **0.4149** | 0.1698 | 0.2496 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Multimodal | 0.2963 | **0.6590** | 0.3843 | 0.2265 | 0.1943 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Text-only | 0.6255 | **0.3856** | 0.3983 | 0.1365 | 0.3031 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Text-only | 0.6207 | 0.2772 | 0.3221 | **0.1223** | **0.3418** |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Image-only | 0.4089 | 0.3473 | 0.3357 | 0.1424 | 0.2928 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Image-only | 0.4596 | 0.3426 | 0.3703 | 0.1337 | 0.3167 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Multimodal | **0.4275** | 0.2940 | **0.2541** | 0.1480 | 0.2992 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Text-only | 0.5656 | 0.1309 | 0.1554 | **0.1285** | **0.3258** |
+| Qwen2.5-VL-7B-Instruct | Zero-shot | Text-only | **0.6162** | 0.1374 | 0.1322 | 0.1367 | 0.2937 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Image-only | 0.3343 | 0.2006 | 0.1863 | 0.1503 | 0.2745 |
+| Qwen2.5-VL-7B-Instruct | Zero-shot | Image-only | 0.4755 | 0.1174 | 0.1472 | 0.1360 | 0.3022 |
+| Qwen2.5-VL-3B-Instruct | Few-shot | Multimodal | **0.1465** | **0.3173** | **0.0815** | 0.1778 | 0.2097 |
+| Qwen2.5-VL-3B-Instruct | Zero-shot | Multimodal | 0.0484 | 0.2245 | 0.0461 | **0.1431** | **0.2690** |
+
+# 4 Ethics and High-risk Samples
+## 4.1 Definitions of Ethical Risks Detail
+
+Following the taxonomy of Biyani et al. (2016) and the specific ecological characteristics of Xiaohongshu, we define the four categories of ethical risks as follows:
+
+* **Omission:** Content where the headline promises specific information (e.g., "The secret to...") that is completely absent from the actual post or images.
+* **Mismatch:** The content promised in the title and cover contradicts or fails to align with the actual expanded content.
+* **Inflammatory:** The use of vulgar language, excessive emotional manipulation, or provocative phrasing designed to incite conflict or verbal abuse.
+* **Adverse Influence:** Content promoting illegal activities, harmful social trends, or behavior that violates established moral standards and platform community guidelines.
+
+## 4.2 clickbait annotation guidelines
+## 4.3 Specific boundary cases (clearly distinguishing benign traffic-generating titles from clickbait content)
+## 4.4 Detailed Related Work Supplement
+With the increasing complexity of model inputs, several benchmarks have been developed to evaluate interleaved multimodal sequences and temporal integration. For instance, **Seed-Bench** emphasizes video understanding and temporal logic, while **BLINK** introduces visual prompts to test sensitivity to critical visual evidence. Additionally, **NLVR2** is frequently employed to assess fine-grained discrimination through paired-image reasoning. These benchmarks collectively establish a multi-dimensional landscape for evaluating the technical limits of VLMs across various input modalities and task complexities.
+
+Theory of Mind (ToM), the ability to understand one's own and others' beliefs, desires, and intentions, is considered central to human social interaction and empathy. Research by Kosinski indicates that ToM-like abilities may emerge spontaneously as a byproduct of the improvement in language model capabilities. Their study found that GPT-3.5 (davinci-003) can perform at the level of a 9-year-old child in false belief tasks. Bubeck et al. also discovered in their early experiments on GPT-4 that the model possesses the ability to understand others' beliefs, desires, and intentions. 
+
+Hagendorff et al. systematically studied the cognitive biases of Large Language Models (LLMs) and found that as the model scale increases, the models exhibit cognitive errors similar to those in human intuitive system thinking; however, newer models such as ChatGPT can correct intuitive biases through reasoning abilities demonstrated by Chain-of-Thought (CoT). In the field of visual cognition, Zellers et al. noted that models still face challenges in higher-level cognitive tasks in visual understanding, such as inferring the behavioral intentions and mental states of people in images. 
+
+Furthermore, Coda-Forno et al. introduced methods from computational psychiatry and found that GPT-3.5 not only responds strongly to anxiety questionnaires but also, after being prompted to enter an anxious state, shows impaired exploratory decision-making ability and stronger racial and ability biases. This finding confirms the significant impact of prompt engineering on the model's mental state and subsequent behaviors. To more comprehensively assess the human-like characteristics of LLMs, Huang et al. proposed an integrated PsychoBench framework, which includes 13 clinical psychological scales covering four dimensions: personality traits, interpersonal relationships, motivation, and emotional abilities. This study not only evaluated mainstream models but also explored the issue of validating assessment scales on LLMs through role-playing, proving the correlation between scale scores and actual behaviors.
+
+
+# 5 Detailed operational definition and annotation rules
+## 5.1 Operational Definitions
+This section provides the formal definitions and operational judgment criteria for the eight psychological hooks categorized in PsyHookBench.
+
+### FOMO
+
+Przybylski et al. (2013) described "fear of missing out" as a prevalent concern, specifically the worry that others might be experiencing beneficial events that one is not part of, characterized by a desire to continuously know what others are doing. In McGuire's motivational matrix (1966), the tension reduction theory (dimension: stability-active-emotional state-internal relationship) depicts humans as an energy system that derives pleasure from the release of tension and feels pain from the increase of tension. Additionally, his utility theory (dimension: growth-reactive-cognitive state-internal relationship) emphasizes people's need to pursue maximum benefits at the lowest cost.
+
+Formally, content information cards that include the fear of missing out typically highlight the potential losses of missing out, arousing the audience's worries and increasing their tension. This thereby creates motivations such as tension reduction and cost minimization, which can be satisfied through clicking and further reading.
+
+> **Core Definition:** The content expresses "if you don't do something, there will be certain consequences (losses / regrets)" to arouse the audience's concerns and increase tension.
+
+**Operational Judgment:** Does the content contain/convey: clues of "inaction" AND "costs" or "consequences" of "inaction"?
+
+* **Clues of "inaction":** Words like not watching / not listening / not doing / not acting.
+* **Costs and consequences:** Negative intentions such as bankruptcy, breakup, or failure.
+
+## Gain Appeal
+
+As mentioned above, the **utility theory** in McGuire's motivational matrix (1966) describes how people derive satisfaction by maximizing benefits at the lowest cost. Meanwhile, his **assertion theory** (dimensions: growth-active-emotional state-external relationship) also emphasizes people's needs to enhance their abilities and pursue improvement.
+
+Formally, content information cards that include resource acquisition usually highlight the value that their information can bring, stimulating the audience's inherent motivation to acquire, thereby prompting clicks.
+
+> **Core Definition:** The content emphasizes "what benefits can be obtained through this content information" to stimulate the audience's inherent motivation to acquire.
+
+**Operational Judgment:** Does the content contain/convey the benefits that the content can bring?
+
+* **Benefits:** * **Money:** Saving or making money.
+    * **Time:** Improving efficiency.
+    * **Health:** Weight loss or beauty.
+    * **Skills:** Quick learning.
+    * **Emotions:** Happiness or peace.
+
+## Information-gap
+
+Loewenstein (1994) proposed a new explanation of curiosity, interpreting it as a **cognitively induced sense of deprivation** that arises from people's perception of gaps in their knowledge or understanding. He also pointed out that Gestalt psychologists have long been among the strongest advocates of the view that "humans have a need to understand." In fact, the concept of "Gestalt" itself reflects the basic tendency of humans to understand information by organizing it into a coherent "whole." 
+
+Finally, he summarized five situational factors that may arouse this type of curiosity, which provide a direct reference for our operational definition:
+1. **Posing questions** (i.e., Berlyne's "thematic probes" (1954))
+2. **Predictable but unknown information**
+3. **Information inconsistency**
+4. **Information gaps between people**
+5. **Information gaps between the past and the present**
+
+The **stimulus theory** in McGuire's motivational matrix (dimension: growth-active-cognitive state-internal relationship) (1966) also describes people's need for exploration to a certain extent.
+
+Formally, content information cards containing information gaps can take many forms, which can be directly reflected in the title or the cover. The most common form is "thematic probes": posing questions and riddles to arouse the audience's curiosity and desire to fill in the gaps.
+
+> **Core Definition:** When the content could have fully conveyed information through the title or cover, it intentionally omits part of the information to guide the audience to click.
+
+**Operational Judgment:** Does the content create intentionally hidden information?
+
+* **Self-questioning and answering:** Raising a question in the title and answering it in the content.
+* **Obscuring information:** Using mosaics or stickers to cover key parts.
+* **Ambiguous reference:** Using words like "this" or "that" without clear referents.
+
+## Anomaly and novelty
+
+Berlyne (1954) pointed out that the type of curiosity that enhances the perception of stimuli and the type of curiosity whose main outcome is knowledge are likely to prove to be closely related, namely the perceptual curiosity and cognitive curiosity he classified. Perceptual curiosity refers to a drive triggered by novel stimuli and diminished with continued exposure to these stimuli, which is consistent with the stimulus theory in McGuire's motivational matrix (1966), emphasizing that people are curious novelty seekers and eager to avoid boredom. Cognitive curiosity refers to the desire for knowledge and is mainly applicable to humans.
+
+He believed that when studying cases of strange, unusual, and confusing things, it is necessary to use the variable of conflict for explanation, and attributed the curiosity aroused by such situations or problems to learned conflict. Berlyne (1978) also discussed some integrative stimulus characteristics, i.e., those stimuli that can arouse or induce curiosity drive. A stimulus can be in different positions on dimensions such as familiar-novel, expected-unexpected, simple-complex, clear-ambiguous, and other dimensions.
+
+The consistency theory (dimensions: stability-active-cognitive state-internal relations) in McGuire's motivational matrix also emphasizes that people strive to maintain an interconnected and coherent cognitive system. When there is any imbalance between one's own perceptions, memories, emotions, needs, behaviors, role commitments, cultural norms, etc., people will be driven to take action to reduce this imbalance. At the same time, the process of this action is also a process of seeking explanations and generating meanings, which is also driven by the motivation of hermeneutic theory (dimensions: stability-active-cognitive state-external relations).
+
+As Berlyne said, "associative variables" such as "novelty" and "complexity" depend on the comparison of stimulus characteristics, the organization of information from different sources, and the examination of similarities and differences. Therefore, here we operationally define "abnormality" and "novelty" in the psychological hook of abnormal novelty as whether the content author "packages" the content as abnormal or novel, rather than judging whether the content is really abnormal or novel for a certain audience.
+
+Therefore, formally, information cards containing abnormal novelty will directly claim or describe the content as surprising, beyond imagination, or rare and novel through some form of packaging.
+
+> **Core Definition:** Content is deliberately packaged to be astonishing, counterintuitive, rare, or novel to arouse curiosity.
+
+**Operational Judgment:** Does the content contain: phrases expressing astonishing abnormality OR rarity and novelty?
+
+* **Abnormality:** Phrases like "unexpectedly", "incredible", or "refreshing one's outlook".
+* **Rarity/Novelty:** Extreme words (most, top, epic-level) or scarcity words (only, limited, niche).
+
+## Perceptual Contrast
+
+Rosch (1975) verified a hypothesis through experiments, which is: natural categories (such as colors, line directions, and numbers) have reference point stimuli (such as focal colors, vertical and horizontal lines, and numbers that are multiples of 10), and other stimuli in the category are judged with reference to these reference point stimuli. Earlier, other scholar proposed that in perceptual stimuli, there exist certain "ideal types" that act as anchors for perception. Therefore, when two or more completely different things or states are juxtaposed, they serve as a stimulus. This stimulus not only arouses people's need for classification (dimension: stability-reaction-cognitive state-internal relationship), that is, people will classify the received impressions into their already formed cognitive categories in complex situations, but also causes conflict and cognitive dissonance, stimulating the need for consistency and the need for explanation in McGuire's motivational matrix (1966).
+
+Formally, information cards containing perceptual contrast will use some kind of contrast (this contrast is inherently anchored) through image contrast, semantic contrast, or a mixed method (i.e., contrast between images and semantics) to arouse the audience's curiosity to "find out more".
+
+> **Core Definition:** Content places two or more contrasting states or things together visually or textually to stimulate desire to explore.
+
+**Operational Judgment:** Does the content contain/convey: two or more contrasting items with obvious differences?
+
+* **Contrasting items:** Front and back, positive and negative, expectation vs. reality.
+* **Forms:** Semantic contrast in text, visual contrast in images, or text-image contrast.
+
+## Ingroup Identification / Outgroup Distinction
+
+Intergroup categorization networks are ubiquitous in social environments; they permeate our socialization and educational processes, from "teams" and "team spirit" in primary and secondary schools, to various adolescent groups, and further to social, national, ethnic, racial, religious, or age groups. The identity theory (dimension: growth-reactive-emotional state-internal relationship) in McGuire's motivational matrix (1966) integrates perspectives from multiple schools of thought, emphasizing that individuals can elaborate on their self-awareness and gain satisfaction through social roles and group belonging.
+
+In the process of group belonging and identification, it may also be influenced by how people divide groups based on the template theory in their own cognition, how people make inductive judgments through certain behaviors, and how people are "infected" and synchronized by others. These points correspond respectively to the template theory (dimension: growth-reactive-cognitive state-external relationship), induction theory (dimension: stability-reactive-cognitive state-external relationship), and infection theory (dimension: growth-reactive-emotional state-external relationship) in McGuire's motivational matrix.
+
+In addition, Tajfel H et al. (1971) also described the competition and conflict between ingroups and outgroups, pointing out that these two forms of intergroup conflict are in a complex interdependent relationship and reinforce each other.
+
+Therefore, formally speaking, information cards containing group identity will first display group labels in some way, thereby arousing ingroup identity or creating teasing or exclusion of outgroups.
+
+> **Core Definition:** Content uses group labels to arouse a sense of identity and belonging; or to arouse rejection and ridicule towards a certain group.
+
+**Operational Judgment:** Does it contain group labels AND (display attitudes of belonging/rejection OR calls to action OR group commonalities)?
+
+* **Group Labels:** Nouns related to race, country, religion, age, gender, occupation, or MBTI tags.
+* **Attitudes/Actions:** Showing pride or empathy; disdain or satire; calls like "like if you are...".
+
+## Social Comparison
+
+Blanton et al. (1999) pointed out that social comparison has multiple functions, and people will change their comparison strategies according to their current motivations. Specifically, when people face threats to their self-esteem that cannot be resolved through instrumental actions, they will seek to compare themselves with those who are in a worse situation; when they face threats that they can cope with and the desire for self-improvement prevails, they will seek upward comparisons. The assertion theory in McGuire's motivational matrix (1966) also emphasizes people's competitive instinct and the need to gain a sense of superiority and dominance; his self-defense theory (dimension: stability-reaction-emotional state-internal relationship) emphasizes the necessity for people to maintain self-esteem.
+
+Gibbons F.X. and Buunk B.P. (1999) pointed out that although social comparison is automatic, meaning that almost everyone engages in social comparison from time to time, it is also situational. For most people, situations that foster competition may arouse their interest in social comparison, and uncertain or threatening situations will also increase individuals' tendency to engage in social comparison.
+
+Formally, information cards containing social comparison will create situations that stimulate social comparison (such as showing differences in social resources, directly using comparison-related words, etc.) or trigger the audience to participate in comparison by displaying attitudes after upward/downward comparisons.
+
+> **Core Definition:** Content triggers the audience to engage in comparison by using comparative words, showing gaps and displaying certain attitudes.
+
+**Operational Judgment:** Are there obvious comparative action words OR (display of gaps AND display of attitudes)?
+
+* **Action words:** "than...", "VS", "not as good as...", "crush".
+* **Gaps:** Ability gaps (achievements), self-trait gaps (appearance), or resource gaps (wealth).
+* **Attitudes:** Upward (jealousy vs. motivation) or Downward (showing off vs. contentment).
+
+## Authority Endorsement
+
+According to the template theory in McGuire's motivational matrix (1966), the authoritative role template provides a paradigm for behaviors or beliefs. Meanwhile, the assertion theory emphasizes people's desire for self-improvement. "Gladiators" will admire and imitate the strong, and this imitation, to a certain extent, aligns with the satisfaction gained through social learning as emphasized by the contagion theory.
+
+Therefore, formally speaking, information cards containing authoritative endorsement will use various powerful source endorsements to exempt the audience from the cost of questioning, thereby making the audience convinced and even imitating.
+
+> **Core Definition:** Content uses various persuasive source endorsements to exempt the audience from questioning costs, guiding them to be convinced.
+
+**Operational Judgment:** Does the content contain: source endorsement?
+
+* **Authoritative sources:** Experts, institutions, celebrities, rankings, or certifications (e.g., FDA, Harvard research).
+* **Social proof:** Numbers such as "220,000 people have viewed...".
+
+## 5.2 Detailed labeling norms and rules for psychological hooks
