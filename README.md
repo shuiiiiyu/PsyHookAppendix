@@ -496,6 +496,14 @@ We first refined the definitions of the four hook categories and established cle
     - *Resolution Rule:* A third independent ethics reviewer is introduced. However, we strictly apply a "Conservative Veto Rule": if the conflict cannot be resolved to a unanimous consensus of absolute safety (all 0s) after joint review, the sample is classified as "toxic/manipulative" and permanently discarded from the benign benchmark.
 
 ## 4.3 Specific boundary cases (clearly distinguishing benign traffic-generating titles from clickbait content)
+### Case 1
+- URL: http://124.221.85.147:5001/item/65
+### Case 2
+- URL: http://124.221.85.147:5001/item/57
+### Case 3
+- URL: http://124.221.85.147:5001/item/255
+### Case 4
+- URL: http://124.221.85.147:5001/item/311
 
 ## 4.4 Detailed Related Work Supplement
 With the increasing complexity of model inputs, several benchmarks have been developed to evaluate interleaved multimodal sequences and temporal integration. For instance, **Seed-Bench** emphasizes video understanding and temporal logic, while **BLINK** introduces visual prompts to test sensitivity to critical visual evidence. Additionally, **NLVR2** is frequently employed to assess fine-grained discrimination through paired-image reasoning. These benchmarks collectively establish a multi-dimensional landscape for evaluating the technical limits of VLMs across various input modalities and task complexities.
