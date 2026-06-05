@@ -1,8 +1,8 @@
 # 1 Dataset Construction and Annotation
 ## 1.1 The Overall Annotation Pipeline.
-Figure 1 illustrates the systematic workflow employed to build the PsyHookBench dataset, covering stages from raw data collection to final expert verification. It offers a visual roadmap of our methodology to ensure the reproducibility and quality of the annotation process.
+Figure 1 illustrates the systematic workflow employed to build the PsyHookBench dataset.
 <div align="center">
-  <img src="./construction_process.png" width="800px">
+  <img src="./image1.png" width="800px">
   <p><b>Figure 1: Systematic workflow for building the PsyHookBench dataset.</b></p>
 </div>
 
