@@ -65,9 +65,9 @@ We further compared the model against the average performance of human annotator
 ### Table 4: Test results of pre-annotation under different conditions
 | Metric | title:image=1:1 (5 rounds) | title:image=1:1 (1 round) | title:image=4:1 (1 round) | Human Annotation |
 | :--- | :--- | :--- | :--- | :--- |
-| Macro-F1 | 0.5103 | 0.4860 | 0.5429 | 0.5191 |
+| Macro-F1 | 0.5103 | 0.4860 | 0.5429 | 0.5164 |
 | Micro-F1 | 0.4858 | 0.4816 | 0.5591 | 0.5435 |
-| Average Recall | 0.6888 | 0.6830 | 0.7017 | 0.6699 |
+| Average Recall | 0.6888 | 0.6830 | 0.7017 | 0.6673 |
 
 **Formal model annotation.**
 We ultimately adopted a 5-round labeling configuration with temperature set to 0.5 for each round, together with retrieval from two weighted vector database. For Hook 01, 02, 03, 04, and 06, we used a vector database with a text--image retrieval weight ratio of 4:1. For Hook 05, 07, and 08, we used a vector database with a text--image retrieval weight ratio of 1:1.
@@ -523,6 +523,11 @@ We first refined the definitions of the four hook categories and established cle
   <p><b>Figure 4: Specific boundary cases.</b></p>
 </div>
 
+## 4.4 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
+## ⚠️ Dual-Use Risk & Usage Agreement
+PsyHookBench is dedicated to AI Safety and Cognitive Alignment. To prevent the misuse of psychological hooks for generating deceptive clickbait or malicious manipulation, this dataset is released under a strict Acceptable Use Policy (AUP). By accessing the data, you agree NOT to use it for malicious Natural Language Generation (NLG) or targeted manipulation.
+### You can see our latesr license in https://github.com/shuiiiiyu/PsyhookBench.
+
 # 5 Detailed operational definition and annotation rules
 ## 5.1 Operational Definitions
 This section provides the formal definitions and operational judgment criteria for the eight psychological hooks categorized in PsyHookBench.
@@ -714,7 +719,5 @@ d: Adverse impact: The title promotes content violating laws or morality
 
 e: No ethical risks
 
-# 6 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
-### License has changed in https://github.com/shuiiiiyu/PsyhookBench.
-## ⚠️ Dual-Use Risk & Usage Agreement
-PsyHookBench is dedicated to AI Safety and Cognitive Alignment. To prevent the misuse of psychological hooks for generating deceptive clickbait or malicious manipulation, this dataset is released under a strict Acceptable Use Policy (AUP). By accessing the data, you agree NOT to use it for malicious Natural Language Generation (NLG) or targeted manipulation.
+
+
