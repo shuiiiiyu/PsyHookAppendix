@@ -550,7 +550,8 @@ Formally, content information cards that include resource acquisition usually hi
 
 **Operational Judgment:** Does the content contain/convey the benefits that the content can bring?
 
-* **Benefits:** * **Money:** Saving or making money.
+* **Benefits:**
+    * **Money:** Saving or making money.
     * **Time:** Improving efficiency.
     * **Health:** Weight loss or beauty.
     * **Skills:** Quick learning.
