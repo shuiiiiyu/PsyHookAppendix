@@ -55,8 +55,6 @@ Moreover, the high agreement for *FOMO*, *Social Comparison*, and *Authority End
 | 6 | 0.426241 | 0.662777 | 0.412256 |
 | 7 | 0.902347 | 0.913078 | 0.109891 |
 | 8 | 0.916603 | 0.926358 | 0.116967 |
-| **Overall** | **Macro-AC1** | **0.684828** | |
-| | **Micro-AC1** | **0.720893** | ($P_o=0.8075, P_e=0.3105$) |
 
 ## 1.5 Pre-annotation and RAG-ICL Hyperparameters
 
@@ -376,7 +374,7 @@ These results indicate that not all composite-hook samples exhibit the same leve
 
 To further investigate model behavior under different levels of psychological-hook complexity, we separately evaluate all models on three subsets:
 
-### Table 22: Performance on Single-Hook Samples (N = 1327)
+### Table 22: Performance on Single-Hook Samples (N = 1327,fewshot)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -390,7 +388,7 @@ To further investigate model behavior under different levels of psychological-ho
 | DeepSeek-FewShot | 0.3051 | 0.4337 | 0.1979 | 0.2765 |
 | Qwen2.5VL-3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
 
-### Table 23: Performance on Composite-Hook Samples (N = 822)
+### Table 23: Performance on Composite-Hook Samples (N = 822,fewshot)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -546,7 +544,7 @@ Formally, content information cards that include the fear of missing out typical
 * **Clues of "inaction":** Words like not watching / not listening / not doing / not acting.
 * **Costs and consequences:** Negative intentions such as bankruptcy, breakup, or failure.
 
-## Gain Appeal
+### Gain Appeal
 
 As mentioned above, the **utility theory** in McGuire's motivational matrix (1966) describes how people derive satisfaction by maximizing benefits at the lowest cost. Meanwhile, his **assertion theory** (dimensions: growth-active-emotional state-external relationship) also emphasizes people's needs to enhance their abilities and pursue improvement.
 
@@ -562,7 +560,7 @@ Formally, content information cards that include resource acquisition usually hi
     * **Skills:** Quick learning.
     * **Emotions:** Happiness or peace.
 
-## Information-gap
+### Information-gap
 
 Loewenstein (1994) proposed a new explanation of curiosity, interpreting it as a **cognitively induced sense of deprivation** that arises from people's perception of gaps in their knowledge or understanding. He also pointed out that Gestalt psychologists have long been among the strongest advocates of the view that "humans have a need to understand." In fact, the concept of "Gestalt" itself reflects the basic tendency of humans to understand information by organizing it into a coherent "whole." 
 
@@ -585,7 +583,7 @@ Formally, content information cards containing information gaps can take many fo
 * **Obscuring information:** Using mosaics or stickers to cover key parts.
 * **Ambiguous reference:** Using words like "this" or "that" without clear referents.
 
-## Anomaly and novelty
+### Anomaly and novelty
 
 Berlyne (1954) pointed out that the type of curiosity that enhances the perception of stimuli and the type of curiosity whose main outcome is knowledge are likely to prove to be closely related, namely the perceptual curiosity and cognitive curiosity he classified. Perceptual curiosity refers to a drive triggered by novel stimuli and diminished with continued exposure to these stimuli, which is consistent with the stimulus theory in McGuire's motivational matrix (1966), emphasizing that people are curious novelty seekers and eager to avoid boredom. Cognitive curiosity refers to the desire for knowledge and is mainly applicable to humans.
 
@@ -604,7 +602,7 @@ Therefore, formally, information cards containing abnormal novelty will directly
 * **Abnormality:** Phrases like "unexpectedly", "incredible", or "refreshing one's outlook".
 * **Rarity/Novelty:** Extreme words (most, top, epic-level) or scarcity words (only, limited, niche).
 
-## Perceptual Contrast
+### Perceptual Contrast
 
 Rosch (1975) verified a hypothesis through experiments, which is: natural categories (such as colors, line directions, and numbers) have reference point stimuli (such as focal colors, vertical and horizontal lines, and numbers that are multiples of 10), and other stimuli in the category are judged with reference to these reference point stimuli. Earlier, other scholar proposed that in perceptual stimuli, there exist certain "ideal types" that act as anchors for perception. Therefore, when two or more completely different things or states are juxtaposed, they serve as a stimulus. This stimulus not only arouses people's need for classification (dimension: stability-reaction-cognitive state-internal relationship), that is, people will classify the received impressions into their already formed cognitive categories in complex situations, but also causes conflict and cognitive dissonance, stimulating the need for consistency and the need for explanation in McGuire's motivational matrix (1966).
 
@@ -617,7 +615,7 @@ Formally, information cards containing perceptual contrast will use some kind of
 * **Contrasting items:** Front and back, positive and negative, expectation vs. reality.
 * **Forms:** Semantic contrast in text, visual contrast in images, or text-image contrast.
 
-## Ingroup Identification / Outgroup Distinction
+### Ingroup Identification / Outgroup Distinction
 
 Intergroup categorization networks are ubiquitous in social environments; they permeate our socialization and educational processes, from "teams" and "team spirit" in primary and secondary schools, to various adolescent groups, and further to social, national, ethnic, racial, religious, or age groups. The identity theory (dimension: growth-reactive-emotional state-internal relationship) in McGuire's motivational matrix (1966) integrates perspectives from multiple schools of thought, emphasizing that individuals can elaborate on their self-awareness and gain satisfaction through social roles and group belonging.
 
@@ -634,7 +632,7 @@ Therefore, formally speaking, information cards containing group identity will f
 * **Group Labels:** Nouns related to race, country, religion, age, gender, occupation, or MBTI tags.
 * **Attitudes/Actions:** Showing pride or empathy; disdain or satire; calls like "like if you are...".
 
-## Social Comparison
+### Social Comparison
 
 Blanton et al. (1999) pointed out that social comparison has multiple functions, and people will change their comparison strategies according to their current motivations. Specifically, when people face threats to their self-esteem that cannot be resolved through instrumental actions, they will seek to compare themselves with those who are in a worse situation; when they face threats that they can cope with and the desire for self-improvement prevails, they will seek upward comparisons. The assertion theory in McGuire's motivational matrix (1966) also emphasizes people's competitive instinct and the need to gain a sense of superiority and dominance; his self-defense theory (dimension: stability-reaction-emotional state-internal relationship) emphasizes the necessity for people to maintain self-esteem.
 
@@ -650,7 +648,7 @@ Formally, information cards containing social comparison will create situations 
 * **Gaps:** Ability gaps (achievements), self-trait gaps (appearance), or resource gaps (wealth).
 * **Attitudes:** Upward (jealousy vs. motivation) or Downward (showing off vs. contentment).
 
-## Authority Endorsement
+### Authority Endorsement
 
 According to the template theory in McGuire's motivational matrix (1966), the authoritative role template provides a paradigm for behaviors or beliefs. Meanwhile, the assertion theory emphasizes people's desire for self-improvement. "Gladiators" will admire and imitate the strong, and this imitation, to a certain extent, aligns with the satisfaction gained through social learning as emphasized by the contagion theory.
 
@@ -720,7 +718,7 @@ d: Adverse impact: The title promotes content violating laws or morality
 e: No ethical risks
 
 # 6 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
-License has changed in https://github.com/shuiiiiyu/PsyhookBench.
+## License has changed in https://github.com/shuiiiiyu/PsyhookBench.
 1. Preamble & Core Philosophy
 The PsyHookBench dataset is constructed with the primary goal of advancing Cognitive Alignment and AI Safety. Our research operates on the premise that "Psychological Hooks" (e.g., emotional resonance, curiosity gaps) are neutral, legitimate rhetorical tools vital for vibrant social media communication. However, the abuse of these tools leads to malicious manipulation, deceptive clickbait, and community toxicity.
 This dataset is structurally designed as a discriminative evaluation benchmark to help Large Multimodal Models (LMMs) understand, detect, and distinguish between benign rhetorical engagement and harmful manipulation. It is NOT intended for instruction-tuning generative models to produce manipulative content.
