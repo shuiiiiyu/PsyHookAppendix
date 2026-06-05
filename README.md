@@ -108,7 +108,7 @@ Once a sample is routed to the experts, they do not rely on subjective feelings 
 - **Multimodal Conflict Rule:** If textual and visual cues contradict or invoke different hooks, the expert determines the *dominant hook* based on the primary focal point of the cover image combined with the title's leading clause.
 - **Discard Policy:** If the expert panel cannot reach a unanimous decision on the dominant psychological mechanism after applying the rules, the sample is deemed too noisy and is strictly discarded to maintain benchmark quality.
 
-## 1.8 Sample distribution across annotation stages and hook categories.
+## 1.8 Sample distribution across annotation stages and hook categories
 ### Table 6. Distribution of accepted human annotations, accepted machine annotations, and expert-reviewed samples across the eight hook categories.
 | Source | Hook1 | Hook2 | Hook3 | Hook4 | Hook5 | Hook6 | Hook7 | Hook8 |
 |----------|------:|------:|------:|------:|------:|------:|------:|------:|
