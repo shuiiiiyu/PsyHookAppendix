@@ -1,7 +1,7 @@
 # 1 Dataset Construction and Annotation
 ## 1.1 The Overall Annotation Pipeline.
 <div align="center">
-  <img src="./image1.png" width="800px">
+  <img src="./e7179a6df1d48e32e34fb1a356b164e.png" width="800px">
   <p><b>Figure 1: Systematic workflow for building the PsyHookBench dataset.</b></p>
 </div>
 
