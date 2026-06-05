@@ -107,12 +107,20 @@ Once a sample is routed to the experts, they do not rely on subjective feelings 
 
 - **Multimodal Conflict Rule:** If textual and visual cues contradict or invoke different hooks, the expert determines the *dominant hook* based on the primary focal point of the cover image combined with the title's leading clause.
 - **Discard Policy:** If the expert panel cannot reach a unanimous decision on the dominant psychological mechanism after applying the rules, the sample is deemed too noisy and is strictly discarded to maintain benchmark quality.
-  
+
+## 1.8 Distribution of accepted human annotations, accepted machine annotations, and expert-reviewed samples
+### Table 6. Distribution of accepted human annotations, accepted machine annotations, and expert-reviewed samples across the eight hook categories.
+| Source | Hook1 | Hook2 | Hook3 | Hook4 | Hook5 | Hook6 | Hook7 | Hook8 |
+|----------|------:|------:|------:|------:|------:|------:|------:|------:|
+| Human-Annotated Accepted Samples | 8 | 65 | 125 | 44 | 50 | 54 | 20 | 18 |
+| Machine-Annotated Accepted Samples | 0 | 936 | 349 | 0 | 418 | 204 | 0 | 31 |
+| Expert-Reviewed Samples (Full Dataset) | 34 | 152 | 184 | 182 | 121 | 144 | 82 | 20 |
+
 # 2 Dataset Statistics
-Table 6 provides a multifaceted overview of the dataset scale, including the distribution of image and video modalities, alongside linguistic and engagement metrics such as title lengths and like counts. 
+Table 7 provides a multifaceted overview of the dataset scale, including the distribution of image and video modalities, alongside linguistic and engagement metrics such as title lengths and like counts. 
 
 ## 2.1 Dataset Statistics
-### Table 6: Dataset Statistics
+### Table 7: Dataset Statistics
 | Statistic Category | Metric | Value |
 | :--- | :--- | :--- |
 | **Overview** | Total Count | 3041 |
@@ -124,9 +132,9 @@ Table 6 provides a multifaceted overview of the dataset scale, including the dis
 | | Average Like Count | 7,248.79 |
 
 ## 2.2 Dataset Composition Details
-Table 7 provides a detailed breakdown of the number of psychological hooks identified per sample, distinguishing between single-hook, composite-hook (including the specific distribution of multiple labels), and no-hook instances. This granular view supplements the general dataset statistics by highlighting the co-occurrence frequency of different psychological mechanisms. Table 3 illustrates the distribution of data across various social media content categories.
+Table 8 provides a detailed breakdown of the number of psychological hooks identified per sample, distinguishing between single-hook, composite-hook (including the specific distribution of multiple labels), and no-hook instances. This granular view supplements the general dataset statistics by highlighting the co-occurrence frequency of different psychological mechanisms. Table 9 illustrates the distribution of data across various social media content categories.
 
-### Table 7: Number of psychological hooks for each sample
+### Table 8: Number of psychological hooks for each sample
 
 | Statistic | Number |
 | :--- | :--- |
@@ -135,7 +143,7 @@ Table 7 provides a detailed breakdown of the number of psychological hooks ident
 | **No Hook** | 865 (28.6%) |
 
 ## 2.3 Content source categories
-### Table 8: Content source categories
+### Table 9: Content source categories
 | Category | Count | Percentage |
 | :--- | :--- | :--- |
 | **Keywords search** | 81 | 2.66% |
@@ -152,7 +160,7 @@ Table 7 provides a detailed breakdown of the number of psychological hooks ident
 | **Fitness** | 239 | 7.86% |
 
 ## 2.4 8 Psychological Hooks Counts & Quality
-### Table 9: 8 Psychological Hooks Counts & Quality
+### Table 10: 8 Psychological Hooks Counts & Quality
 | Hook Category | Count |
 | :--- | :--- |
 | **Gain Appeal** | 1153 |
@@ -169,7 +177,7 @@ Table 7 provides a detailed breakdown of the number of psychological hooks ident
 | **Only Edge Cases** | 215 |
 
 ## 2.5 Distribution of Edge Cases and High-Consensus Samples
-### Table 10:Distribution of Edge Cases and High-Consensus Samples
+### Table 11:Distribution of Edge Cases and High-Consensus Samples
 | Category | Count |
 |----------|------:|
 | Edge Cases Only | 215 |
@@ -182,9 +190,9 @@ To further investigate the observed **Complexity Paradox**, we conducted three c
 
 ### Label Frequency Analysis
 
-Table 11 reports the positive occurrence rates of the eight psychological hooks in single-hook and composite-hook samples. Composite-hook samples contain substantially higher frequencies across all hook categories, suggesting that the complexity paradox cannot be explained by a lack of positive examples in the training distribution.
+Table 12 reports the positive occurrence rates of the eight psychological hooks in single-hook and composite-hook samples. Composite-hook samples contain substantially higher frequencies across all hook categories, suggesting that the complexity paradox cannot be explained by a lack of positive examples in the training distribution.
 
-**Table 11. Positive Label Rates Across Single-Hook and Composite-Hook Samples**
+**Table 12. Positive Label Rates Across Single-Hook and Composite-Hook Samples**
 
 | Hook | Single-Hook | Composite-Hook |
 |--------|--------:|--------:|
@@ -199,16 +207,16 @@ Table 11 reports the positive occurrence rates of the eight psychological hooks 
 
 ### Class Prior Analysis
 
-We further compared the label-density distributions between the two subsets. As expected, single-hook samples contain exactly one positive hook, whereas composite-hook samples contain between two and six hooks.
+We further compared the label-density distributions between the two subsets. As expected, single-hook samples contain exactly one positive hook, whereas composite-hook samples contain between two and six hooks.See Table 13 and Table 14.
 
-**Table 12. Label Density Statistics**
+**Table 13. Label Density Statistics**
 
 | Subset | Samples | Avg. Labels | Median | Min | Max |
 |---------|---------:|---------:|---------:|---------:|---------:|
 | Single-Hook | 1339 | 1.00 | 1 | 1 | 1 |
 | Composite-Hook | 837 | 2.30 | 2 | 2 | 6 |
 
-**Table 13. Label Count Distribution in Composite Samples**
+**Table 14. Label Count Distribution in Composite Samples**
 
 | Number of Hooks | Percentage |
 |---------|---------:|
@@ -231,7 +239,7 @@ Overall, the results suggest that the complexity paradox is unlikely to be expla
 # 3 Experiments and Analysis
 ## 3.1 Few-shot Summary cross 9 models (Multimodal) + human annotation + Invalid Output Analysis
 
-### Table 14: Few-shot Summary cross 9 models (Multimodal)
+### Table 15: Few-shot Summary cross 9 models (Multimodal)
 | ModelName | Macro-Recall | Macro-Precision | Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- |
 | Claude-haiku4.5 | **0.7829** | 0.3458 | 0.4590 | 0.1785 | 0.2303 |
@@ -248,9 +256,9 @@ Overall, the results suggest that the complexity paradox is unlikely to be expla
 
 ## 3.2 Per-Hook Precision, Recall, and F1 Scores
 
-To provide a more fine-grained evaluation of model behavior, Table 15 reports the precision (P), recall (R), and F1 score for each psychological hook across all evaluated models. Results reveal substantial variation across hook categories. Gain Appeal (H2) consistently achieves the highest performance across models, while FOMO (H1), Social Comparison (H7), and Authority Endorsement (H8) remain considerably more challenging.
+To provide a more fine-grained evaluation of model behavior, Table 16 reports the precision (P), recall (R), and F1 score for each psychological hook across all evaluated models. Results reveal substantial variation across hook categories. Gain Appeal (H2) consistently achieves the highest performance across models, while FOMO (H1), Social Comparison (H7), and Authority Endorsement (H8) remain considerably more challenging.
 
-**Table 15. Per-Hook Precision (P), Recall (R), and F1 Scores**
+**Table 16. Per-Hook Precision (P), Recall (R), and F1 Scores**
 
 | Model | H1 (P/R/F1) | H2 (P/R/F1) | H3 (P/R/F1) | H4 (P/R/F1) | H5 (P/R/F1) | H6 (P/R/F1) | H7 (P/R/F1) | H8 (P/R/F1) |
 |---------|---------|---------|---------|---------|---------|---------|---------|---------|
@@ -273,7 +281,7 @@ To evaluate whether the observed performance differences between models are stat
 For each model pair, we performed **1,000 bootstrap resampling iterations** with replacement. In each iteration, a bootstrap sample of the same size as the original test set was drawn, and the Macro-F1 score was recomputed for both models. 
 A difference was considered statistically significant when the corresponding 95% confidence interval did not include zero.
 
-### Table 16: Pairwise Bootstrap Significance Test Results
+### Table 17: Pairwise Bootstrap Significance Test Results
 
 | Model A | Model B | Δ Macro-F1 | 95% CI Lower | 95% CI Upper | Significant |
 |----------|----------|----------:|----------:|----------:|----------|
@@ -322,9 +330,9 @@ Notably, **Yi-Vision-V2** significantly outperforms all other evaluated models, 
 
 ## 3.4 Analysis of Frequent Multi-Hook Combinations
 
-We additionally analyzed the most common hook combinations containing two or more psychological hooks. Table 16 lists the most frequently occurring combinations in the dataset.
+We additionally analyzed the most common hook combinations containing two or more psychological hooks. Table 18 lists the most frequently occurring combinations in the dataset.
 
-**Table 17: Most Frequent Multi-Hook Combinations**
+**Table 18: Most Frequent Multi-Hook Combinations**
 
 | Combination | Count |
 |------------|------:|
@@ -343,7 +351,7 @@ We further computed the average Macro-F1 across all nine evaluated models for ea
 
 ### Easiest Combinations
 
-**Table 18: Highest-Performing Hook Combinations**
+**Table 19: Highest-Performing Hook Combinations**
 
 | Combination | Count | Avg. Macro-F1 |
 |------------|------:|------:|
@@ -352,7 +360,7 @@ We further computed the average Macro-F1 across all nine evaluated models for ea
 
 ### Hardest Combinations
 
-**Table 19: Lowest-Performing Hook Combinations**
+**Table 20: Lowest-Performing Hook Combinations**
 
 | Combination | Count | Avg. Macro-F1 |
 |------------|------:|------:|
@@ -365,7 +373,7 @@ These results indicate that not all composite-hook samples exhibit the same leve
 
 To further investigate model behavior under different levels of psychological-hook complexity, we separately evaluate all models on three subsets:
 
-### Table 20. Performance on Single-Hook Samples (N = 1327)
+### Table 21: Performance on Single-Hook Samples (N = 1327)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -379,7 +387,7 @@ To further investigate model behavior under different levels of psychological-ho
 | DeepSeek-FewShot | 0.3051 | 0.4337 | 0.1979 | 0.2765 |
 | Qwen2.5VL-3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
 
-### Table 21. Performance on Composite-Hook Samples (N = 822)
+### Table 22: Performance on Composite-Hook Samples (N = 822)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -394,16 +402,13 @@ To further investigate model behavior under different levels of psychological-ho
 | Qwen2.5VL-3B | 0.5922 | 0.1336 | 0.0888 | 0.0976 |
 
 ### Discussion
-
-Several noteworthy observations emerge from these results.
-
 First, the strongest models remain robust across both complexity levels. Yi-Vision-V2 achieves the highest Macro-F1 on single-hook samples (0.5568), while Claude achieves the highest Macro-F1 on composite-hook samples (0.6561).
 
 Second, contrary to the intuition that composite-hook samples should be more difficult, several leading models achieve substantially higher performance on composite-hook samples than on single-hook samples. For example, Claude improves from 0.4706 to 0.6561 Macro-F1, Gemini improves from 0.4392 to 0.5735, and Qwen2.5-VL-32B improves from 0.3831 to 0.5379. This phenomenon is consistent with the Complexity Paradox discussed in the main paper.
 
 Finally, all models obtain zero scores on the no-hook subset under the current evaluation protocol because no positive labels are present in these samples, making conventional multi-label precision, recall, and F1 undefined.
 
-### Table 22: Invalid Output Analysis
+### Table 23: Invalid Output Analysis
 
 | Model | Invalid Output Rate (%) |
 | :--- | :--- |
@@ -417,7 +422,7 @@ Finally, all models obtain zero scores on the no-hook subset under the current e
 | Claude 3.7 Sonnet | 1.32 |
 | Yi-Vision-v2 | 1.98 |
 
-As a supplementary metric for model reliability, Table 22 reports the Invalid Output Rate for each evaluated model. This metric represents the proportion of model responses that failed to conform to the required output format (e.g., garbled text or incorrect JSON structure).
+As a supplementary metric for model reliability, Table 23 reports the Invalid Output Rate for each evaluated model. This metric represents the proportion of model responses that failed to conform to the required output format (e.g., garbled text or incorrect JSON structure).
 
 ## 3.6 Model Performance Across Vertical Categories
 To evaluate the model's robustness, we calculated the F1-score of the test results across different vertical data samples. The detailed performance distribution across various categories (such as career, cosmetics, and food) can be seen in the heatmap provided in Figure 3.
@@ -427,7 +432,7 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 </div>
 
 ## 3.7 Zero-shot Summary cross 5 models (Multimodal)
-### Table 23: Zero-shot Summary cross 5 models (Multimodal)
+### Table 24: Zero-shot Summary cross 5 models (Multimodal)
 | ModelName | Macro-Recall | Macro-Precision | Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- |
 | Claude-haiku4.5 | 0.6374 | 0.4040 | 0.4707 | **0.1335** | **0.3528** |
@@ -437,7 +442,7 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 | Qwen2.5-VL-3B-Instruct | 0.0484 | 0.2245 | 0.0461 | 0.1431 | 0.2690 |
 
 ## 3.8 Prompt Robustness (Zero-shot)
-### Table 24: Prompt Robustness (Zero-shot)
+### Table 25: Prompt Robustness (Zero-shot)
 | ModelName | prompt | Macro-Recall | Macro-Precision| Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- | --- |
 | Qwen2.5-VL-32B-Instruct | missing optional definition | **0.6893** | 0.3870 | 0.4460 | 0.2167 | 0.1430 |
@@ -446,7 +451,7 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 
 
 ## 3.9 Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
-### Table 25: Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
+### Table 26: Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
 | ModelName | Task | Type | Macro-Precision | Macro-Recall | Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Claude-haiku4.5 | Few-shot | Multimodal | 0.3458 | **0.7829** | 0.4590 | 0.1785 | 0.2303 |
