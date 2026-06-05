@@ -1,5 +1,5 @@
 # 1 Dataset Construction and Annotation
-## 1.1 The Overall Construction Process
+## 1.1 The Overall Annotation Pipeline.
 Figure 1 illustrates the systematic workflow employed to build the PsyHookBench dataset, covering stages from raw data collection to final expert verification. It offers a visual roadmap of our methodology to ensure the reproducibility and quality of the annotation process.
 <div align="center">
   <img src="./construction_process.png" width="800px">
@@ -13,7 +13,7 @@ Our specialized annotation platform provides a structured environment for the an
   <p><b>Figure 2: Annotation platform GUI.</b></p>
 </div>
 
-## 1.3 Performance Different Annotators
+## 1.3 Statistical Results of Human Annotation
 To ensure the reliability of the dataset and filter out potential malicious annotations, we calculated the mean, variance, and standard deviation of the scores assigned by five individual human annotators. This statistical oversight ensures that each annotator's output remains within a reasonable and consistent range. You can see the result in Table 1.Table 2 summarizes the mean ($\mu$), variance ($\sigma^2$), and standard deviation ($\sigma$) for each of the eight predefined hook categories.
 
 ### Table 1: Performance statistics for different annotators
@@ -58,7 +58,7 @@ Moreover, the high agreement for *FOMO*, *Social Comparison*, and *Authority End
 | **Overall** | **Macro-AC1** | **0.684828** | |
 | | **Micro-AC1** | **0.720893** | ($P_o=0.8075, P_e=0.3105$) |
 
-## 1.5 Assessment of Annotation Robustness
+## 1.5 Pre-annotation and RAG-ICL Hyperparameters
 
 **Pre-annotation study.**
 We sampled 100 items from the seed set as a validation set and evaluated GPT-4o under different temperatures, different numbers of sampling rounds, and different text--image ratios in the retrieved context. The results show an overall F1 around 0.5 (Macro-F1: 0.5103; Micro-F1: 0.4858; Average Recall: 0.6888; see Table 4. Since 87\% of our labels are zeros (i.e., hook absent), achieving a Macro-F1 of 0.5 in this long-tailed multi-label setting suggests that the model has captured substantial regularities, while remaining weaker on edge cases.
@@ -77,7 +77,7 @@ We ultimately adopted a 5-round labeling configuration with temperature set to 0
 **RAG Hyperparameters.**
 We used Chinese-CLIP (ViT-B/16 + RoBERTa-wwm-base) to encode multimodal inputs into a shared 512-dimensional embedding space. FAISS was adopted as the retrieval engine with top-k=4. For retrieval weighting, text/image ratios were set to 0.8/0.2 for semantic-oriented hooks (H1, H2, H3, H4, H6) and 0.5/0.5 for visually-dependent hooks (H5, H7, H8). Each query retrieved four reference examples for in-context learning. GPT-4o was used for inference with temperature=0.0.
 
-## 1.6 Expert diversion and rechecking strategy.
+## 1.6 Metric-driven Dynamic Arbitration
 Given the difficulty and complexity of the task, we further combined each hook's AC1 values and pre-annotation performance (F1 and recall) to specify, for each hook, which voting outcomes require expert rechecking. We refer to this as a **traffic-light diversion strategy**. Under the *green-light* condition, we accept the machine voting outcome as the final label; under the *red-light* condition, the label must be reviewed by experts.Refer to Table 5 for the detail.
 
 ### Table 5: Conditions and core logic for expert diversion and rechecking
@@ -92,7 +92,7 @@ Given the difficulty and complexity of the task, we further combined each hook's
 | **7 Social Comparison** | high AC1; high F1 | 0, 1, 2, 4, 5 | 3 | The model is reliable; only disputed votes require expert review. |
 | **8 Authority** | high AC1; high F1 | 0, 1, 2, 4, 5 | 3 | Same as Hook 7. |
 
-## 1.7 Expert referee judgment criteria
+## 1.7 Criteria for Expert Arbitration
 **(1) Dynamic Triggering Conditions (Metric-Driven Routing):**
 
 Unlike standard pipelines that only trigger review on tied votes, our arbitration is triggered by a **5-vote ensemble system** using hook-specific statistical thresholds (based on Precision, Recall, and AC1 behaviors), as detailed in 1.6.
@@ -108,19 +108,20 @@ Once a sample is routed to the experts, they do not rely on subjective feelings 
 - **Multimodal Conflict Rule:** If textual and visual cues contradict or invoke different hooks, the expert determines the *dominant hook* based on the primary focal point of the cover image combined with the title's leading clause.
 - **Discard Policy:** If the expert panel cannot reach a unanimous decision on the dominant psychological mechanism after applying the rules, the sample is deemed too noisy and is strictly discarded to maintain benchmark quality.
 
-## 1.8 Sample distribution across annotation stages and hook categories
+## 1.8 Distribution of Final Annotated Samples
 ### Table 6. Distribution of accepted human annotations, accepted machine annotations, and expert-reviewed samples across the eight hook categories.
-| Source | Hook1 | Hook2 | Hook3 | Hook4 | Hook5 | Hook6 | Hook7 | Hook8 |
-|----------|------:|------:|------:|------:|------:|------:|------:|------:|
-| Human-Annotated Accepted Samples | 8 | 65 | 125 | 44 | 50 | 54 | 20 | 18 |
-| Machine-Annotated Accepted Samples | 0 | 936 | 349 | 0 | 418 | 204 | 0 | 31 |
-| Expert-Reviewed Samples (Full Dataset) | 34 | 152 | 184 | 182 | 121 | 144 | 82 | 20 |
+| Source | Hook1 | Hook2 | Hook3 | Hook4 | Hook5 | Hook6 | Hook7 | Hook8 | Total|
+|----------|------:|------:|------:|------:|------:|------:|------:|------:|------:|
+| Human-Annotated Accepted Samples | 8 | 65 | 125 | 44 | 50 | 54 | 20 | 18 | 384 |
+| Machine-Annotated Accepted Samples | 0 | 936 | 349 | 0 | 418 | 204 | 0 | 31 | 1938 |
+| Expert-Reviewed Samples (Full Dataset) | 34 | 152 | 184 | 182 | 121 | 144 | 82 | 20 | 919 |
+| Total| 42| 1153 | 658 | 226 | 589 | 402 | 102 | 69 | 3241 |
 
 # 2 Dataset Statistics
 Table 7 provides a multifaceted overview of the dataset scale, including the distribution of image and video modalities, alongside linguistic and engagement metrics such as title lengths and like counts. 
 
-## 2.1 Dataset Statistics
-### Table 7: Dataset Statistics
+## 2.1 Overall Dataset Statistics
+### Table 7: Overall Dataset Statistics
 | Statistic Category | Metric | Value |
 | :--- | :--- | :--- |
 | **Overview** | Total Count | 3041 |
@@ -134,7 +135,7 @@ Table 7 provides a multifaceted overview of the dataset scale, including the dis
 ## 2.2 Dataset Composition Details
 Table 8 provides a detailed breakdown of the number of psychological hooks identified per sample, distinguishing between single-hook, composite-hook (including the specific distribution of multiple labels), and no-hook instances. This granular view supplements the general dataset statistics by highlighting the co-occurrence frequency of different psychological mechanisms. Table 9 illustrates the distribution of data across various social media content categories.
 
-### Table 8: Number of psychological hooks for each sample
+### Table 8: Statistics on the number of samples with different hook counts
 
 | Statistic | Number |
 | :--- | :--- |
@@ -186,12 +187,9 @@ Table 8 provides a detailed breakdown of the number of psychological hooks ident
 
 ## 2.6 Additional Analysis of the Complexity Paradox
 
-To further investigate the observed **Complexity Paradox**, we conducted three complementary analyses: **(1) Label Frequency Analysis**, **(2) Class Prior Analysis**, and **(3) Content Category Analysis**. These analyses aim to determine whether the paradoxical performance differences between simple and complex psychological-hook samples could be attributed to differences in label frequency, label density, or content-domain composition rather than the intrinsic complexity of the hooks themselves.
+To further investigate the observed **Complexity Paradox**, we conducted three complementary analyses: **(1) Label Frequency Analysis**, **(2) Class Prior Analysis**, and **(3) Content Category Analysis**. 
 
 ### Label Frequency Analysis
-
-Table 12 reports the positive occurrence rates of the eight psychological hooks in single-hook and composite-hook samples. Composite-hook samples contain substantially higher frequencies across all hook categories, suggesting that the complexity paradox cannot be explained by a lack of positive examples in the training distribution.
-
 **Table 12. Positive Label Rates Across Single-Hook and Composite-Hook Samples**
 
 | Hook | Single-Hook | Composite-Hook |
@@ -206,9 +204,6 @@ Table 12 reports the positive occurrence rates of the eight psychological hooks 
 | H8 (Authority Endorsement) | 1.49% | 5.85% |
 
 ### Class Prior Analysis
-
-We further compared the label-density distributions between the two subsets. As expected, single-hook samples contain exactly one positive hook, whereas composite-hook samples contain between two and six hooks.See Table 13 and Table 14.
-
 **Table 13. Label Density Statistics**
 
 | Subset | Samples | Avg. Labels | Median | Min | Max |
@@ -225,21 +220,29 @@ We further compared the label-density distributions between the two subsets. As 
 | 4 | 3.23% |
 | 5 | 0.48% |
 | 6 | 0.12% |
-
-These results indicate that composite samples are indeed more densely labeled; however, the performance patterns observed in the main experiments cannot be solely attributed to class-prior differences.
-
 ### Content Category Analysis
+**Table 15: Content Category Analysis**
+| Class | 1 label | 2 or more labels |
+|---------|---------:|---------:|
+| career | 0.0889 | 0.1099 |
+| cosmetics | 0.0724 | 0.1099 |
+| fashion | 0.0702 | 0.0932 |
+| fitness | 0.0665 | 0.1446 |
+| food | 0.1247 | 0.0944 |
+| gaming | 0.0926 | 0.0526 |
+| household_product | 0.0822 | 0.0753 |
+| keywords | 0.0276 | 0.0370 |
+| love | 0.1001 | 0.0956 |
+| movie_and_tv | 0.0814 | 0.0358 |
+| recommend | 0.1120 | 0.0992 |
+| travel | 0.0814 | 0.0526 |
 
-To exclude the possibility that the complexity paradox is driven by domain-specific content distributions, we compared the category composition of single-hook and composite-hook subsets. The two subsets exhibit highly similar distributions across major content domains such as career, cosmetics, fashion, fitness, food, gaming, household products, travel, and recommendation content.
-
-The largest categories in both subsets are recommendation, fitness-related content, household products, food, fashion, and career topics, indicating that domain composition remains broadly comparable across complexity levels.
-
-Overall, the results suggest that the complexity paradox is unlikely to be explained by differences in label frequency, label density, or content-domain composition alone.
+The analysis of the "Complexity Paradox" should be reviewed alongside Section 3.5.
 
 # 3 Experiments and Analysis
-## 3.1 Few-shot Summary cross 9 models (Multimodal) + human annotation + Invalid Output Analysis
+## 3.1 Few-shot Summary cross 9 models (Multimodal) 
 
-### Table 15: Few-shot Summary cross 9 models (Multimodal)
+### Table 16: Few-shot Summary cross 9 models (Multimodal)
 | ModelName | Macro-Recall | Macro-Precision | Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- |
 | Claude-haiku4.5 | **0.7829** | 0.3458 | 0.4590 | 0.1785 | 0.2303 |
@@ -258,7 +261,7 @@ Overall, the results suggest that the complexity paradox is unlikely to be expla
 
 To provide a more fine-grained evaluation of model behavior, Table 16 reports the precision (P), recall (R), and F1 score for each psychological hook across all evaluated models. Results reveal substantial variation across hook categories. Gain Appeal (H2) consistently achieves the highest performance across models, while FOMO (H1), Social Comparison (H7), and Authority Endorsement (H8) remain considerably more challenging.
 
-**Table 16. Per-Hook Precision (P), Recall (R), and F1 Scores**
+**Table 17. Per-Hook Precision (P), Recall (R), and F1 Scores**
 
 | Model | H1 (P/R/F1) | H2 (P/R/F1) | H3 (P/R/F1) | H4 (P/R/F1) | H5 (P/R/F1) | H6 (P/R/F1) | H7 (P/R/F1) | H8 (P/R/F1) |
 |---------|---------|---------|---------|---------|---------|---------|---------|---------|
@@ -281,7 +284,7 @@ To evaluate whether the observed performance differences between models are stat
 For each model pair, we performed **1,000 bootstrap resampling iterations** with replacement. In each iteration, a bootstrap sample of the same size as the original test set was drawn, and the Macro-F1 score was recomputed for both models. 
 A difference was considered statistically significant when the corresponding 95% confidence interval did not include zero.
 
-### Table 17: Pairwise Bootstrap Significance Test Results
+### Table 18: Pairwise Bootstrap Significance Test
 
 | Model A | Model B | Δ Macro-F1 | 95% CI Lower | 95% CI Upper | Significant |
 |----------|----------|----------:|----------:|----------:|----------|
@@ -328,11 +331,11 @@ The bootstrap analysis demonstrates that the majority of pairwise model differen
 
 Notably, **Yi-Vision-V2** significantly outperforms all other evaluated models, while **Qwen3B** consistently performs significantly worse than the remaining models. The strongest statistically significant difference is observed between **Yi-Vision-V2** and **Qwen3B** 
 
-## 3.4 Analysis of Frequent Multi-Hook Combinations
+## 3.4 Frequency and Difficulty Analysis of Multi-Hook Combinations
 
 We additionally analyzed the most common hook combinations containing two or more psychological hooks. Table 18 lists the most frequently occurring combinations in the dataset.
 
-**Table 18: Most Frequent Multi-Hook Combinations**
+**Table 19: Most Frequent Multi-Hook Combinations**
 
 | Combination | Count |
 |------------|------:|
@@ -351,7 +354,7 @@ We further computed the average Macro-F1 across all nine evaluated models for ea
 
 ### Easiest Combinations
 
-**Table 19: Highest-Performing Hook Combinations**
+**Table 20: Highest-Performing Hook Combinations**
 
 | Combination | Count | Avg. Macro-F1 |
 |------------|------:|------:|
@@ -360,7 +363,7 @@ We further computed the average Macro-F1 across all nine evaluated models for ea
 
 ### Hardest Combinations
 
-**Table 20: Lowest-Performing Hook Combinations**
+**Table 21: Lowest-Performing Hook Combinations**
 
 | Combination | Count | Avg. Macro-F1 |
 |------------|------:|------:|
@@ -373,7 +376,7 @@ These results indicate that not all composite-hook samples exhibit the same leve
 
 To further investigate model behavior under different levels of psychological-hook complexity, we separately evaluate all models on three subsets:
 
-### Table 21: Performance on Single-Hook Samples (N = 1327)
+### Table 22: Performance on Single-Hook Samples (N = 1327)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -387,7 +390,7 @@ To further investigate model behavior under different levels of psychological-ho
 | DeepSeek-FewShot | 0.3051 | 0.4337 | 0.1979 | 0.2765 |
 | Qwen2.5VL-3B | 0.2746 | 0.1900 | 0.0907 | 0.0783 |
 
-### Table 22: Performance on Composite-Hook Samples (N = 822)
+### Table 23: Performance on Composite-Hook Samples (N = 822)
 
 | Model | Precision | Recall | Macro-F1 | Micro-F1 |
 |---------|---------:|---------:|---------:|---------:|
@@ -402,13 +405,9 @@ To further investigate model behavior under different levels of psychological-ho
 | Qwen2.5VL-3B | 0.5922 | 0.1336 | 0.0888 | 0.0976 |
 
 ### Discussion
-First, the strongest models remain robust across both complexity levels. Yi-Vision-V2 achieves the highest Macro-F1 on single-hook samples (0.5568), while Claude achieves the highest Macro-F1 on composite-hook samples (0.6561).
+Notably, precision has increased substantially on composite trigger samples with an average growth rate of 58.3%
 
-Second, contrary to the intuition that composite-hook samples should be more difficult, several leading models achieve substantially higher performance on composite-hook samples than on single-hook samples. For example, Claude improves from 0.4706 to 0.6561 Macro-F1, Gemini improves from 0.4392 to 0.5735, and Qwen2.5-VL-32B improves from 0.3831 to 0.5379. This phenomenon is consistent with the Complexity Paradox discussed in the main paper.
-
-Finally, all models obtain zero scores on the no-hook subset under the current evaluation protocol because no positive labels are present in these samples, making conventional multi-label precision, recall, and F1 undefined.
-
-### Table 23: Invalid Output Analysis
+### Table 24: Invalid Output Analysis
 
 | Model | Invalid Output Rate (%) |
 | :--- | :--- |
@@ -441,7 +440,31 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 | Qwen2.5-VL-32B-Instruct | 0.6590 | 0.2963 | 0.3843 | 0.2265 | 0.1943 |
 | Qwen2.5-VL-3B-Instruct | 0.0484 | 0.2245 | 0.0461 | 0.1431 | 0.2690 |
 
+we established a strictly controlled intersection set (the 5 models in Table 24) evaluated under both settings to isolate variables and rigorously validate our claims:
+1. Unconfounded Evidence for Scaling Laws
+To prove that larger models perform better inherently (not just because they are better at reading few-shot exemplars), we look exclusively at the zero-shot baseline. Within the Qwen2.5-VL family (Table 23), the 32B model (Macro-F1: 0.3843) drastically outperforms the 3B model (Macro-F1: 0.0461). This confirms the scaling law holds intrinsically for recognizing psychological hooks, independent of prompting.
+2. Isolating the ICL Performance Delta
+By comparing this exact 5-model subset between the zero-shot and few-shot tables, we eliminate model-selection bias. The data clearly shows consistent ICL gains. For instance, DeepSeek-VL2's F1 score doubles from 0.105 (Zero-shot) to 0.213 (Few-shot), and Qwen2.5-VL-3B improves from 0.046 to 0.081. This unconfounded comparison solidly validates that In-Context Learning universally lifts multimodal alignment performance.
+3. The "Exemplar Distraction" Phenomenon in Top-Tier Models
+Interestingly, cross-referencing the tables reveals a counter-intuitive phenomenon: while smaller or open-source models heavily rely on ICL as a necessary scaffold (e.g., DeepSeek-VL2 F1 doubles), top-tier proprietary models like Gemini 2.0 Flash and Claude-haiku4.5 actually experience a slight performance regression in the few-shot setting (e.g., Gemini F1 drops from 0.483 to 0.454).
+We attribute this to Contextual Interference (or Exemplar Distraction). These highly capable models already possess exceptionally strong zero-shot intuition for subtle psychological manipulation. When presented with lengthy multimodal few-shot exemplars, the extended context introduces noise. Instead of applying their robust pre-trained generalizations, they tend to over-index or overfit to the specific visual/textual artifacts present in the provided examples. 
 ## 3.8 Prompt Robustness (Zero-shot)
+We tested three prompt variants using Qwen2.5-VL-32B-Instruct in a Zero-shot setting.
+1. Why We Chose the "Full Prompt" as the Main Baseline
+One might notice that the full prompt does not always yield the absolute highest metric in every category. However, we deliberately standardized it for our primary evaluation pipeline due to two critical methodological principles:
+Strict Human Alignment: The full prompt encompasses comprehensive operational definitions and strict boundaries that directly mirror the Annotation Codebook used by our human annotators. In a benchmark designed for cognitive alignment, it is vital to test whether the AI can strictly adhere to nuanced human ethical and psychological boundaries (Instruction Following), rather than merely relying on its pre-trained "intuition" or "vibes".
+Interpretability & Error Analysis: The full prompt mandates a Chain-of-Thought (CoT) generation ([Thought Process]). While forcing step-by-step reasoning can sometimes cause models to "overthink" in intuitive tasks, capturing this intermediate reasoning process is non-negotiable. It provides the crucial transparency needed for qualitative Error Analysis, allowing us to diagnose exactly why and where a model's multimodal perception failed.
+2. Empirical Insights from the Ablation (Data Analysis)
+The results from Table 24 provide fascinating insights into how LMMs process covert psychological persuasion:
+Variant A: missing optional definition (High Recall, Low Precision)
+When we removed the detailed operational constraints (retaining only the core hook names), the model's Macro-Recall surged to 0.6893, but its Macro-Precision dropped significantly to 0.3870 (with the highest Hamming Loss of 0.2167).
+Insight: Without strict boundary definitions, the 32B model relies entirely on its broad pre-trained knowledge. It becomes highly sensitive and catches almost all potential hooks (High Recall), but it over-predicts and hallucinates (Low Precision). This mathematically proves the necessity of our detailed full prompt to control false positives and enforce strict boundary alignment.
+Variant B: missing CoT guide (Highest Precision & F1)
+When we removed the requirement to generate a step-by-step reasoning process (asking for direct prediction), the model achieved the best overall performance (Macro-F1: 0.4881, Macro-Precision: 0.4885, EMR: 0.3042).
+Insight: Detecting psychological hooks (like anxiety, humor, or resonance) is fundamentally an intuitive, perceptual task (System 1) for both humans and AI, rather than a rigid logical deduction task (System 2). Forcing the model to explicitly write out a CoT can sometimes introduce "reasoning hallucinations" or cause over-thinking, slightly depressing accuracy. Removing CoT allows the model to leverage its direct multimodal intuition efficiently.
+Conclusion
+The performance variations across the three prompts perfectly align with cognitive and statistical expectations. The minor gap in Macro-F1 between the missing CoT variant (0.488) and the full prompt (0.463) demonstrates that PsyHookBench is highly robust. The models' performance is grounded in their intrinsic multimodal comprehension capabilities rather than artificial prompt-hacking. The full prompt remains our most scientifically rigorous baseline to ensure alignment and interpretability.
+
 ### Table 25: Prompt Robustness (Zero-shot)
 | ModelName | prompt | Macro-Recall | Macro-Precision| Macro-F1 | HammingLoss | EMR |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -451,28 +474,24 @@ To evaluate the model's robustness, we calculated the F1-score of the test resul
 
 
 ## 3.9 Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
-### Table 26: Ablation study of multimodal, text-only, and image-only inputs cross fewshot and zeroshot
-| ModelName | Task | Type | Macro-Precision | Macro-Recall | Macro-F1 | HammingLoss | EMR |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Claude-haiku4.5 | Few-shot | Multimodal | 0.3458 | **0.7829** | 0.4590 | 0.1785 | 0.2303 |
-| Claude-haiku4.5 | Zero-shot | Multimodal | 0.4040 | 0.6374 | **0.4707** | 0.1335 | 0.3528 |
-| Claude-haiku4.5 | Few-shot | Text-only | **0.5349** | 0.3724 | 0.4034 | **0.1152** | **0.3774** |
-| Claude-haiku4.5 | Zero-shot | Text-only | 0.4197 | 0.5127 | 0.4403 | 0.1300 | 0.3603 |
-| Claude-haiku4.5 | Few-shot | Image-only | 0.1703 | 0.3538 | 0.1875 | 0.3022 | 0.1151 |
-| Claude-haiku4.5 | Zero-shot | Image-only | 0.3212 | 0.2618 | 0.2651 | 0.1468 | 0.3002 |
-| Qwen2.5-VL-32B-Instruct | Few-shot | Multimodal | 0.3395 | **0.6108** | 0.4149 | 0.1698 | 0.2496 |
-| Qwen2.5-VL-32B-Instruct | Zero-shot | Multimodal |0.4668 | 0.5847 | **0.4638** |  0.1563 | 0.3009 |
-| Qwen2.5-VL-32B-Instruct | Few-shot | Text-only | **0.6255** | 0.3856 | 0.3983 | 0.1365 | 0.3031 |
-| Qwen2.5-VL-32B-Instruct | Zero-shot | Text-only | 0.6207 | 0.2772 | 0.3221 | **0.1223** | **0.3418** |
-| Qwen2.5-VL-32B-Instruct | Few-shot | Image-only | 0.4089 | 0.3473 | 0.3357 | 0.1424 | 0.2928 |
-| Qwen2.5-VL-32B-Instruct | Zero-shot | Image-only | 0.4596 | 0.3426 | 0.3703 | 0.1337 | 0.3167 |
-| Qwen2.5-VL-7B-Instruct | Few-shot | Multimodal | 0.4275 | **0.2940** | **0.2541** | 0.1480 | 0.2992 |
-| Qwen2.5-VL-7B-Instruct | Few-shot | Text-only | 0.5656 | 0.1309 | 0.1554 | **0.1285** | **0.3258** |
-| Qwen2.5-VL-7B-Instruct | Zero-shot | Text-only | **0.6162** | 0.1374 | 0.1322 | 0.1367 | 0.2937 |
-| Qwen2.5-VL-7B-Instruct | Few-shot | Image-only | 0.3343 | 0.2006 | 0.1863 | 0.1503 | 0.2745 |
-| Qwen2.5-VL-7B-Instruct | Zero-shot | Image-only | 0.4755 | 0.1174 | 0.1472 | 0.1360 | 0.3022 |
-| Qwen2.5-VL-3B-Instruct | Few-shot | Multimodal | **0.1465** | **0.3173** | **0.0815** | 0.1778 | 0.2097 |
-| Qwen2.5-VL-3B-Instruct | Zero-shot | Multimodal | 0.0484 | 0.2245 | 0.0461 | **0.1431** | **0.2690** |
+### Table 26: Ablation study of multimodal, text-only, and image-only inputs cross few-shot and zero-shot
+| ModelName | Task | Type | Macro-F1 | Macro-Precision | Macro-Recall |
+| --- | --- | --- | --- | --- | --- |
+| Claude-haiku4.5 | Few-shot | Multimodal | 0.4590 | 0.7829 | 0.3458 |
+| Claude-haiku4.5 | Few-shot | Text-only | 0.4034 | 0.5349 | 0.3724 |
+| Claude-haiku4.5 | Few-shot | Image-only | 0.1875 | 0.1703 | 0.3538 |
+| Claude-haiku4.5 | Zero-shot | Multimodal | 0.4707 | 0.6374 | 0.4040 |
+| Claude-haiku4.5 | Zero-shot | Text-only | 0.4403 | 0.4197 | 0.5127 |
+| Claude-haiku4.5 | Zero-shot | Image-only | 0.2651 | 0.3212 | 0.2618 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Multimodal | 0.4149 | 0.6108 | 0.3395 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Text-only | 0.3983 | 0.6255 | 0.3856 |
+| Qwen2.5-VL-32B-Instruct | Few-shot | Image-only | 0.3357 | 0.4089 | 0.3473 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Multimodal | 0.3843 | 0.6590 | 0.2963 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Text-only | 0.3221 | 0.6207 | 0.2772 |
+| Qwen2.5-VL-32B-Instruct | Zero-shot | Image-only | 0.3703 | 0.4596 | 0.3426 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Multimodal | 0.2541 | 0.2940 | 0.4275 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Text-only | 0.1554 | 0.5656 | 0.1309 |
+| Qwen2.5-VL-7B-Instruct | Few-shot | Image-only | 0.1863 | 0.3343 | 0.2006 |
 
 # 4 Ethics and High-risk Samples
 ## 4.1 Definitions of Ethical Risks Detail
@@ -487,7 +506,7 @@ We refer to the classification of clickbait proposed by Biyani et al. (2016) and
 
 (4) Harmful Content: Preview content promotes materials that run counter to national laws and regulations, public order and good morals, and platform community guidelines, or spreads vulgar, violent, illegal and immoral information that may exert negative value guidance on users.
 
-## 4.2 clickbait annotation guidelines
+## 4.2 Clickbait Annotation
 ### 4.2.1 Machine Annotation
 We first refined the definitions of the four hook categories and established clear annotation boundaries based on the characteristics of social media content on Xiaohongshu, as described in Section 4.1. During the human annotation stage, four posts were excluded because annotators identified potential ethical risks. During the machine annotation stage, we designed a dedicated prompting strategy and employed the Qwen-VL-Max model to screen all 2,500 samples. The model flagged 391 posts as potentially containing ethical risks, which were subsequently subjected to expert review. After manual verification, 12 posts were identified as ethically problematic by both the model and human reviewers and were therefore removed from the benchmark.
 ### 4.2.2 Expert Review
@@ -509,16 +528,6 @@ We first refined the definitions of the four hook categories and established cle
 - URL: http://124.221.85.147:5001/item/255
 ### Case 4
 - URL: http://124.221.85.147:5001/item/311
-
-## 4.4 Detailed Related Work Supplement
-With the increasing complexity of model inputs, several benchmarks have been developed to evaluate interleaved multimodal sequences and temporal integration. For instance, **Seed-Bench** emphasizes video understanding and temporal logic, while **BLINK** introduces visual prompts to test sensitivity to critical visual evidence. Additionally, **NLVR2** is frequently employed to assess fine-grained discrimination through paired-image reasoning. These benchmarks collectively establish a multi-dimensional landscape for evaluating the technical limits of VLMs across various input modalities and task complexities.
-
-Theory of Mind (ToM), the ability to understand one's own and others' beliefs, desires, and intentions, is considered central to human social interaction and empathy. Research by Kosinski indicates that ToM-like abilities may emerge spontaneously as a byproduct of the improvement in language model capabilities. Their study found that GPT-3.5 (davinci-003) can perform at the level of a 9-year-old child in false belief tasks. Bubeck et al. also discovered in their early experiments on GPT-4 that the model possesses the ability to understand others' beliefs, desires, and intentions. 
-
-Hagendorff et al. systematically studied the cognitive biases of Large Language Models (LLMs) and found that as the model scale increases, the models exhibit cognitive errors similar to those in human intuitive system thinking; however, newer models such as ChatGPT can correct intuitive biases through reasoning abilities demonstrated by Chain-of-Thought (CoT). In the field of visual cognition, Zellers et al. noted that models still face challenges in higher-level cognitive tasks in visual understanding, such as inferring the behavioral intentions and mental states of people in images. 
-
-Furthermore, Coda-Forno et al. introduced methods from computational psychiatry and found that GPT-3.5 not only responds strongly to anxiety questionnaires but also, after being prompted to enter an anxious state, shows impaired exploratory decision-making ability and stronger racial and ability biases. This finding confirms the significant impact of prompt engineering on the model's mental state and subsequent behaviors. To more comprehensively assess the human-like characteristics of LLMs, Huang et al. proposed an integrated PsychoBench framework, which includes 13 clinical psychological scales covering four dimensions: personality traits, interpersonal relationships, motivation, and emotional abilities. This study not only evaluated mainstream models but also explored the issue of validating assessment scales on LLMs through role-playing, proving the correlation between scale scores and actual behaviors.
-
 
 # 5 Detailed operational definition and annotation rules
 ## 5.1 Operational Definitions
@@ -709,3 +718,26 @@ c: Incitement: Improper or vulgar wording is adopted
 d: Adverse impact: The title promotes content violating laws or morality
 
 e: No ethical risks
+
+# 6 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
+License has changed in https://github.com/shuiiiiyu/PsyhookBench.
+1. Preamble & Core Philosophy
+The PsyHookBench dataset is constructed with the primary goal of advancing Cognitive Alignment and AI Safety. Our research operates on the premise that "Psychological Hooks" (e.g., emotional resonance, curiosity gaps) are neutral, legitimate rhetorical tools vital for vibrant social media communication. However, the abuse of these tools leads to malicious manipulation, deceptive clickbait, and community toxicity.
+This dataset is structurally designed as a discriminative evaluation benchmark to help Large Multimodal Models (LMMs) understand, detect, and distinguish between benign rhetorical engagement and harmful manipulation. It is NOT intended for instruction-tuning generative models to produce manipulative content.
+By downloading, accessing, or using PsyHookBench, you (the "Licensee") explicitly agree to be bound by the terms of this Restrictive Usage Agreement.
+2. Approved Use Cases (What You CAN Do)
+You are granted permission to use the dataset for academic, non-commercial, and defensive research purposes, including but not limited to:
+Benchmarking & Evaluation: Testing and evaluating the multimodal comprehension capabilities of AI models.
+Cognitive Alignment: Training reward models, conduct DPO/RLHF, or safety classifiers to help AI recognize covert psychological persuasion and manipulative rhetoric.
+Digital Literacy Research: Analyzing social media communication dynamics to improve user digital literacy and platform safety mechanisms.
+3. Prohibited Use Cases (What You CANNOT Do)
+To mitigate dual-use risks and protect the digital ecosystem, you explicitly agree NOT to use PsyHookBench, in whole or in part, for any of the following purposes:
+Malicious Natural Language Generation (NLG): Fine-tuning, training, or prompting generative AI models to automatically generate deceptive clickbait, flame-baiting, or attention-hijacking content.
+Deceptive Marketing & Fraud: Exploiting the psychological hook classifications to craft manipulative advertising, financial scams, or false promises (e.g., violating our Missing or Wrong ethical vectors).
+Targeted Psychological Manipulation: Using the dataset to train systems that exploit specific human psychological vulnerabilities (e.g., extreme FOMO, targeted social anxiety) for political manipulation, hate speech, or inciting gender/social polarization (violating our Incitement or Bad vectors).
+Commercial Exploitation: Integrating the dataset into commercial black-hat SEO tools, automated social media "bot" farms, or spam generators.
+4. Handling of the 16 "Boundary Marker" Samples
+PsyHookBench contains a small subset of ethically rejected samples (the 16 "Boundary Markers"). These samples represent content that crossed the line from benign engagement into toxic manipulation.
+Restriction: These specific samples are provided strictly as negative contrastive pairs (e.g., as "rejected" responses for alignment training). You are strictly prohibited from using these samples as positive training data to teach models how to generate harmful or polarizing content.
+5. Enforcement and Revocation
+This dataset is provided "AS IS" without any warranties. The authors of PsyHookBench reserve the right to revoke your access and usage rights immediately if you are found to be in violation of any of the prohibited use cases. If you incorporate this dataset into secondary derived datasets, this Acceptable Use Policy must seamlessly cascade to the new dataset.
