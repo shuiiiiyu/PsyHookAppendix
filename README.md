@@ -54,6 +54,8 @@ Moreover, the high agreement for *FOMO*, *Social Comparison*, and *Authority End
 | 6 | 0.426241 | 0.662777 | 0.412256 |
 | 7 | 0.902347 | 0.913078 | 0.109891 |
 | 8 | 0.916603 | 0.926358 | 0.116967 |
+| **Overall** | **Macro-AC1** | **0.684828** | |
+| | **Micro-AC1** | **0.720893** | ($P_o=0.8075, P_e=0.3105$) |
 
 ## 1.5 Pre-annotation and RAG-ICL Hyperparameters
 
