@@ -518,14 +518,10 @@ We first refined the definitions of the four hook categories and established cle
     - *Resolution Rule:* A third independent ethics reviewer is introduced. However, we strictly apply a "Conservative Veto Rule": if the conflict cannot be resolved to a unanimous consensus of absolute safety (all 0s) after joint review, the sample is classified as "toxic/manipulative" and permanently discarded from the benign benchmark.
 
 ## 4.3 Specific boundary cases (clearly distinguishing benign traffic-generating titles from clickbait content)
-### Case 1
-- URL: http://124.221.85.147:5001/item/65
-### Case 2
-- URL: http://124.221.85.147:5001/item/57
-### Case 3
-- URL: http://124.221.85.147:5001/item/255
-### Case 4
-- URL: http://124.221.85.147:5001/item/311
+<div align="center">
+  <img src="./image.png" width="800px">
+  <p><b>Figure 4: Specific boundary cases.</b></p>
+</div>
 
 # 5 Detailed operational definition and annotation rules
 ## 5.1 Operational Definitions
