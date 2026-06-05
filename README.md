@@ -525,7 +525,7 @@ We first refined the definitions of the four hook categories and established cle
 </div>
 
 ## 4.4 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
-## ⚠️ Dual-Use Risk & Usage Agreement
+### ⚠️ Dual-Use Risk & Usage Agreement
 PsyHookBench is dedicated to AI Safety and Cognitive Alignment. To prevent the misuse of psychological hooks for generating deceptive clickbait or malicious manipulation, this dataset is released under a strict Acceptable Use Policy (AUP). By accessing the data, you agree NOT to use it for malicious Natural Language Generation (NLG) or targeted manipulation.
 ### You can see our latest license in https://github.com/shuiiiiyu/PsyhookBench.
 
