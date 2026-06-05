@@ -77,7 +77,7 @@ We ultimately adopted a 5-round labeling configuration with temperature set to 0
 **RAG Hyperparameters.**
 We used Chinese-CLIP (ViT-B/16 + RoBERTa-wwm-base) to encode multimodal inputs into a shared 512-dimensional embedding space. FAISS was adopted as the retrieval engine with top-k=4. For retrieval weighting, text/image ratios were set to 0.8/0.2 for semantic-oriented hooks (H1, H2, H3, H4, H6) and 0.5/0.5 for visually-dependent hooks (H5, H7, H8). Each query retrieved four reference examples for in-context learning. GPT-4o was used for inference with temperature=0.0.
 
-## 1.6 Expert diversion and rechecking strategy.**
+## 1.6 Expert diversion and rechecking strategy.
 Given the difficulty and complexity of the task, we further combined each hook's AC1 values and pre-annotation performance (F1 and recall) to specify, for each hook, which voting outcomes require expert rechecking. We refer to this as a **traffic-light diversion strategy**. Under the *green-light* condition, we accept the machine voting outcome as the final label; under the *red-light* condition, the label must be reviewed by experts.Refer to Table 5 for the detail.
 
 ### Table 5: Conditions and core logic for expert diversion and rechecking
