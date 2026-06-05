@@ -714,24 +714,6 @@ d: Adverse impact: The title promotes content violating laws or morality
 e: No ethical risks
 
 # 6 PsyHookBench Acceptable Use Policy (AUP) & Restrictive License
-## License has changed in https://github.com/shuiiiiyu/PsyhookBench.
-1. Preamble & Core Philosophy
-The PsyHookBench dataset is constructed with the primary goal of advancing Cognitive Alignment and AI Safety. Our research operates on the premise that "Psychological Hooks" (e.g., emotional resonance, curiosity gaps) are neutral, legitimate rhetorical tools vital for vibrant social media communication. However, the abuse of these tools leads to malicious manipulation, deceptive clickbait, and community toxicity.
-This dataset is structurally designed as a discriminative evaluation benchmark to help Large Multimodal Models (LMMs) understand, detect, and distinguish between benign rhetorical engagement and harmful manipulation. It is NOT intended for instruction-tuning generative models to produce manipulative content.
-By downloading, accessing, or using PsyHookBench, you (the "Licensee") explicitly agree to be bound by the terms of this Restrictive Usage Agreement.
-2. Approved Use Cases (What You CAN Do)
-You are granted permission to use the dataset for academic, non-commercial, and defensive research purposes, including but not limited to:
-Benchmarking & Evaluation: Testing and evaluating the multimodal comprehension capabilities of AI models.
-Cognitive Alignment: Training reward models, conduct DPO/RLHF, or safety classifiers to help AI recognize covert psychological persuasion and manipulative rhetoric.
-Digital Literacy Research: Analyzing social media communication dynamics to improve user digital literacy and platform safety mechanisms.
-3. Prohibited Use Cases (What You CANNOT Do)
-To mitigate dual-use risks and protect the digital ecosystem, you explicitly agree NOT to use PsyHookBench, in whole or in part, for any of the following purposes:
-Malicious Natural Language Generation (NLG): Fine-tuning, training, or prompting generative AI models to automatically generate deceptive clickbait, flame-baiting, or attention-hijacking content.
-Deceptive Marketing & Fraud: Exploiting the psychological hook classifications to craft manipulative advertising, financial scams, or false promises (e.g., violating our Missing or Wrong ethical vectors).
-Targeted Psychological Manipulation: Using the dataset to train systems that exploit specific human psychological vulnerabilities (e.g., extreme FOMO, targeted social anxiety) for political manipulation, hate speech, or inciting gender/social polarization (violating our Incitement or Bad vectors).
-Commercial Exploitation: Integrating the dataset into commercial black-hat SEO tools, automated social media "bot" farms, or spam generators.
-4. Handling of the 16 "Boundary Marker" Samples
-PsyHookBench contains a small subset of ethically rejected samples (the 16 "Boundary Markers"). These samples represent content that crossed the line from benign engagement into toxic manipulation.
-Restriction: These specific samples are provided strictly as negative contrastive pairs (e.g., as "rejected" responses for alignment training). You are strictly prohibited from using these samples as positive training data to teach models how to generate harmful or polarizing content.
-5. Enforcement and Revocation
-This dataset is provided "AS IS" without any warranties. The authors of PsyHookBench reserve the right to revoke your access and usage rights immediately if you are found to be in violation of any of the prohibited use cases. If you incorporate this dataset into secondary derived datasets, this Acceptable Use Policy must seamlessly cascade to the new dataset.
+### License has changed in https://github.com/shuiiiiyu/PsyhookBench.
+## ⚠️ Dual-Use Risk & Usage Agreement
+PsyHookBench is dedicated to AI Safety and Cognitive Alignment. To prevent the misuse of psychological hooks for generating deceptive clickbait or malicious manipulation, this dataset is released under a strict Acceptable Use Policy (AUP). By accessing the data, you agree NOT to use it for malicious Natural Language Generation (NLG) or targeted manipulation.
