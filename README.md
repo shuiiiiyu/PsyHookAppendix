@@ -61,7 +61,7 @@ Moreover, the high agreement for *FOMO*, *Social Comparison*, and *Authority End
 
 **Pre-annotation study.**
 We sampled 100 items from the seed set as a validation set and evaluated GPT-4o under different temperatures, different numbers of sampling rounds, and different text--image ratios in the retrieved context. The results show an overall F1 around 0.5 (Macro-F1: 0.5103; Micro-F1: 0.4858; Average Recall: 0.6888; see Table 4. Since 87\% of our labels are zeros (i.e., hook absent), achieving a Macro-F1 of 0.5 in this long-tailed multi-label setting suggests that the model has captured substantial regularities, while remaining weaker on edge cases.
-We further compared the model against the average performance of human annotators before expert arbitration. The human baseline (Macro-F1: 0.5191; Micro-F1: 0.5435) indicates that the proposed strategy allows the model to reach a non-expert human level. This also highlights the complexity of the task and motivates our subsequent expert diversion and rechecking strategy.
+We further compared the model against the average performance of human annotators before expert arbitration. The human baseline (Macro-F1: 0.5164; Micro-F1: 0.5435) indicates that the proposed strategy allows the model to reach a non-expert human level. This also highlights the complexity of the task and motivates our subsequent expert diversion and rechecking strategy.
 
 ### Table 4: Test results of pre-annotation under different conditions
 | Metric | title:image=1:1 (5 rounds) | title:image=1:1 (1 round) | title:image=4:1 (1 round) | Human Annotation |
